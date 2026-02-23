@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireScreen AI — Problem Framing Document</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #1A2540;
+    --blue: #4F8EF7;
+    --green: #22C55E;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    --purple: #7C3AED;
+    --bg: #F8FAFC;
+    --border: #E2E8F0;
+    --text: #111827;
+    --muted: #6B7280;
+    --slate: #94A3B8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+    color: var(--text);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 48px;
+    line-height: 1.7;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--navy);
+    margin-bottom: 36px;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 16px; }
+
+  .logo-box {
+    width: 48px; height: 48px;
+    background: var(--navy); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 22px;
+  }
+
+  .brand-name { font-size: 24px; font-weight: 700; color: var(--navy); }
+  .brand-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .doc-type { font-size: 13px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; text-align: right; }
+  .doc-date { font-size: 12px; color: var(--muted); margin-top: 4px; text-align: right; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .section { margin-bottom: 36px; }
+
+  /* OPENER STATEMENT */
+  .opener {
+    background: var(--navy);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 36px;
+    color: white;
+  }
+
+  .opener h2 {
+    font-size: 22px; font-weight: 700; margin-bottom: 10px; line-height: 1.4;
+    color: white;
+  }
+
+  .opener p {
+    font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.7;
+  }
+
+  /* PERSONA CARD */
+  .persona-card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 36px;
+  }
+
+  .persona-left {
+    background: var(--navy);
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .persona-avatar {
+    width: 72px; height: 72px;
+    background: rgba(79,142,247,0.3);
+    border-radius: 50%;
+    border: 3px solid rgba(79,142,247,0.6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    margin-bottom: 4px;
+  }
+
+  .persona-name { font-size: 18px; font-weight: 700; color: white; }
+  .persona-role { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.4; }
+
+  .persona-stats {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .persona-stat {
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+
+  .persona-stat-val { font-size: 18px; font-weight: 700; color: var(--blue); }
+  .persona-stat-label { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+  .persona-right { padding: 28px; background: var(--bg); }
+
+  .persona-section-label {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 8px; margin-top: 14px;
+  }
+
+  .persona-section-label:first-child { margin-top: 0; }
+
+  .pain-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 13px; color: #374151;
+    margin-bottom: 6px; line-height: 1.5;
+  }
+
+  .pain-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 5px;
+  }
+
+  /* PROBLEM STATEMENT BOX */
+  .problem-statement {
+    border: 2px solid var(--red);
+    border-radius: 14px;
+    padding: 24px 28px;
+    background: #FFF8F8;
+    margin-bottom: 36px;
+  }
+
+  .problem-statement h3 {
+    font-size: 13px; font-weight: 700; color: var(--red);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  .problem-statement p {
+    font-size: 15px; color: var(--text); line-height: 1.7;
+  }
+
+  .problem-statement p strong { color: var(--red); }
+
+  /* JOURNEY TIMELINE */
+  .journey-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .journey-step {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .journey-step-header {
+    padding: 10px 14px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: white;
+  }
+
+  .journey-step-body {
+    padding: 12px 14px;
+    background: var(--bg);
+  }
+
+  .journey-step-title {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .journey-step-desc {
+    font-size: 12px; color: var(--muted); line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .journey-friction {
+    font-size: 11px; font-weight: 600;
+    padding: 5px 8px; border-radius: 6px;
+  }
+
+  /* MARKET STATS GRID */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    background: white;
+  }
+
+  .stat-box-val {
+    font-size: 22px; font-weight: 700; margin-bottom: 4px;
+  }
+
+  .stat-box-label {
+    font-size: 11px; color: var(--muted); line-height: 1.4;
+  }
+
+  /* COMPARISON TABLE */
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 36px; }
+  .compare-table th {
+    padding: 10px 14px; text-align: left;
+    background: var(--navy); color: white;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .compare-table th:first-child { border-radius: 8px 0 0 0; }
+  .compare-table th:last-child { border-radius: 0 8px 0 0; }
+  .compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .compare-table tr:nth-child(even) td { background: var(--bg); }
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  /* SOLUTION SUMMARY */
+  .solution-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .solution-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .solution-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+  }
+
+  .solution-card.blue::before { background: var(--blue); }
+  .solution-card.green::before { background: var(--green); }
+  .solution-card.amber::before { background: var(--amber); }
+
+  .solution-icon { font-size: 24px; margin-bottom: 8px; }
+  .solution-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .solution-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* OPPORTUNITY BOX */
+  .opportunity {
+    background: linear-gradient(135deg, #EFF6FF 0%, #F0FDF4 100%);
+    border: 1px solid #BFDBFE;
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-bottom: 36px;
+  }
+
+  .opportunity h3 {
+    font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 12px;
+  }
+
+  .opportunity p {
+    font-size: 13px; color: #374151; line-height: 1.7;
+  }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--slate);
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-box">🎯</div>
+    <div>
+      <div class="brand-name">HireScreen AI</div>
+      <div class="brand-sub">AI-Powered HR Resume Screening Platform</div>
+    </div>
+  </div>
+  <div>
+    <div class="doc-type">Problem Framing Document</div>
+    <div class="doc-date">February 2026 · Version 1.0</div>
+  </div>
+</div>
+
+<!-- OPENER -->
+<div class="opener">
+  <h2>Small companies are drowning in resumes while great candidates quietly accept other offers.</h2>
+  <p>The global HR technology market is valued at USD 38.99 billion in 2025 and growing at 8–9% annually. Yet the most critical part of hiring — screening and scheduling — remains almost entirely manual for small and mid-sized companies. A 50-person tech firm hiring 10 engineers a year spends an estimated USD 500,000 in direct costs and lost productivity. HireScreen AI was built to solve exactly this problem.</p>
+</div>
+
+<!-- PERSONA -->
+<div class="section">
+  <div class="section-title">Target User Persona</div>
+  <div class="persona-card">
+    <div class="persona-left">
+      <div class="persona-avatar">👩‍💼</div>
+      <div class="persona-name">"Sarah"</div>
+      <div class="persona-role">Talent Acquisition Manager at a 50-person tech company</div>
+      <div class="persona-stats">
+        <div class="persona-stat">
+          <div class="persona-stat-val">250+</div>
+          <div class="persona-stat-label">Resumes per open role</div>
+        </div>
+        <div class="persona-stat">
+          <div class="persona-stat-val">52 days</div>
+          <div class="persona-stat-label">Avg time-to-fill tech roles</div>
+        </div>
+        <div class="persona-stat">
+          <div class="persona-stat-val">60%</div>
+          <div class="persona-stat-label">Of week spent on admin tasks</div>
+        </div>
+      </div>
+    </div>
+    <div class="persona-right">
+      <div class="persona-section-label">Who She Is</div>
+      <div class="pain-item"><div class="pain-dot" style="background:var(--blue)"></div>Either a solo HR manager or a founder wearing multiple hats at a 10–50 person tech company</div>
+      <div class="pain-item"><div class="pain-dot" style="background:var(--blue)"></div>Responsible for the entire hiring pipeline — from posting jobs to scheduling final round interviews</div>
+      <div class="pain-item"><div class="pain-dot" style="background:var(--blue)"></div>Has no dedicated sourcing team, no recruiting agency budget, and no time to waste on administrative back-and-forth</div>
+
+      <div class="persona-section-label">Her Core Frustrations</div>
+      <div class="pain-item"><div class="pain-dot" style="background:var(--red)"></div>Spends 10–13 hours manually skimming resumes for a single role, with quality of reviews declining sharply after hour 3</div>
+      <div class="pain-item"><div class="pain-dot" style="background:var(--red)"></div>Loses top candidates because scheduling one interview takes 4–7 days of calendar back-and-forth — and top talent is off the market in just 10 days</div>
+      <div class="pain-item"><div class="pain-dot" style="background:var(--red)"></div>Cannot justify why certain candidates were rejected — no scoring, no audit trail, just gut feel</div>
+      <div class="pain-item"><div class="pain-dot" style="background:var(--red)"></div>Enterprise tools like Paradox cost USD 1,000+/month. She is priced out of the AI hiring tools built for companies 10x her size</div>
+
+      <div class="persona-section-label">Her Goal</div>
+      <div class="pain-item"><div class="pain-dot" style="background:var(--green)"></div>Get from job posting to shortlisted candidates in 2 days, not 14 — without reading a single PDF herself</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM STATEMENT -->
+<div class="section">
+  <div class="section-title">Problem Statement</div>
+  <div class="problem-statement">
+    <h3>Core Problem</h3>
+    <p>
+      Small and mid-sized technology companies receive <strong>hundreds of unstructured resume files</strong> for every open role, but lack the HR staff, time, and budget to screen them effectively. The result is a broken hiring pipeline where <strong>great candidates are missed due to human fatigue</strong>, top talent accepts competing offers during slow scheduling cycles, and HR managers spend the majority of their week on low-judgment administrative tasks instead of strategic hiring decisions. <strong>The problem is not a lack of candidates — it is a lack of capacity to evaluate them fairly and fast.</strong>
+    </p>
+  </div>
+</div>
+
+<!-- SARAH'S JOURNEY -->
+<div class="section">
+  <div class="section-title">How the Problem Plays Out — Sarah's Hiring Journey Today</div>
+  <div class="journey-row">
+    <div class="journey-step">
+      <div class="journey-step-header" style="background:#EF4444">Stage 1 — Sourcing</div>
+      <div class="journey-step-body">
+        <div class="journey-step-title">The PDF Burial</div>
+        <div class="journey-step-desc">Sarah spends 2–4 hours daily skimming profiles. She only physically sees the first 50 resumes before fatigue sets in — the 200th applicant never gets a fair look.</div>
+        <div class="journey-friction" style="background:#FEF2F2;color:#991B1B">⚠ Keyword stuffers advance. Strong candidates buried below.</div>
+      </div>
+    </div>
+    <div class="journey-step">
+      <div class="journey-step-header" style="background:#F59E0B">Stage 2 — Screening</div>
+      <div class="journey-step-body">
+        <div class="journey-step-title">Decision Fatigue</div>
+        <div class="journey-step-desc">Even when shortlisting, Sarah and a hiring manager will disagree on 30–40% of candidates — inconsistent standards lead to repeated interview cycles and wasted time.</div>
+        <div class="journey-friction" style="background:#FFFBEB;color:#92400E">⚠ No scoring system. Gut feel masquerades as process.</div>
+      </div>
+    </div>
+    <div class="journey-step">
+      <div class="journey-step-header" style="background:#7C3AED">Stage 3 — Scheduling</div>
+      <div class="journey-step-body">
+        <div class="journey-step-title">The Ghosting Epidemic</div>
+        <div class="journey-step-desc">Scheduling a single first-round interview takes 4–7 days. 50% of candidates ghost employers due to slow communication. Top candidates are off the market in just 10 days.</div>
+        <div class="journey-friction" style="background:#F3F0FF;color:#5B21B6">⚠ Best candidates hired by faster-moving competitors.</div>
+      </div>
+    </div>
+    <div class="journey-step">
+      <div class="journey-step-header" style="background:#4F8EF7">Stage 4 — Feedback</div>
+      <div class="journey-step-body">
+        <div class="journey-step-title">The Black Box</div>
+        <div class="journey-step-desc">After interviews, Sarah chases hiring managers for feedback. There is no record of why a candidate was rejected — making the next hiring cycle just as inefficient as the last.</div>
+        <div class="journey-friction" style="background:#EFF6FF;color:#1D4ED8">⚠ No audit trail. Same mistakes repeated every hire.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MARKET CONTEXT -->
+<div class="section">
+  <div class="section-title">Market Research Summary</div>
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-box-val" style="color:var(--blue)">$39B</div>
+      <div class="stat-box-label">Global HR Tech market size in 2025, growing to $69B by 2032</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-val" style="color:var(--amber)">42%</div>
+      <div class="stat-box-label">Of HR tech users are SMEs — the fastest growing segment</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-val" style="color:var(--red)">85.2M</div>
+      <div class="stat-box-label">Worker shortage projected globally by 2030 — talent competition is intensifying</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-box-val" style="color:var(--purple)">39.3%</div>
+      <div class="stat-box-label">CAGR for Agentic AI in HR — fastest growing sub-segment, projected $23B by 2034</div>
+    </div>
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Manual Hiring (Today)</th>
+        <th>With HireScreen AI</th>
+        <th>Impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Time to screen 100 resumes</td>
+        <td>10–13 hours</td>
+        <td>Under 10 minutes</td>
+        <td style="color:var(--green);font-weight:600">~95% time saved</td>
+      </tr>
+      <tr>
+        <td>Time to fill (tech roles)</td>
+        <td>44–52 days</td>
+        <td>15–25 days</td>
+        <td style="color:var(--green);font-weight:600">~50% faster</td>
+      </tr>
+      <tr>
+        <td>Cost per hire (10 engineers/year)</td>
+        <td>~USD 500,000 total</td>
+        <td>~USD 205,000 total</td>
+        <td style="color:var(--green);font-weight:600">USD 295,000 saved</td>
+      </tr>
+      <tr>
+        <td>Cost of unfilled engineering seat</td>
+        <td>USD 500–1,082/day</td>
+        <td>Vacancy period cut by ~50%</td>
+        <td style="color:var(--green);font-weight:600">USD 30,000+ per hire</td>
+      </tr>
+      <tr>
+        <td>Candidate ghosting rate</td>
+        <td>50% ghost due to slow process</td>
+        <td>Instant scheduling on shortlist</td>
+        <td style="color:var(--green);font-weight:600">Dramatically reduced</td>
+      </tr>
+      <tr>
+        <td>Screening consistency</td>
+        <td>30–40% inter-rater disagreement</td>
+        <td>Identical AI criteria for every resume</td>
+        <td style="color:var(--green);font-weight:600">Standardised & auditable</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- WHY AGENTIC AI -->
+<div class="section">
+  <div class="section-title">Why This Problem Requires Agentic AI — Not Just Software</div>
+  <div class="solution-grid">
+    <div class="solution-card blue">
+      <div class="solution-icon">📄</div>
+      <div class="solution-title">Unstructured Input</div>
+      <div class="solution-desc">Resumes arrive in hundreds of different formats, layouts, and writing styles. Rule-based systems fail here. AI is needed to read, understand, and extract meaning from free-form text regardless of formatting.</div>
+    </div>
+    <div class="solution-card green">
+      <div class="solution-icon">🧠</div>
+      <div class="solution-title">Judgment-Based Matching</div>
+      <div class="solution-desc">Matching a candidate to a JD is not a keyword check — it requires understanding transferable skills, contextual experience, and role requirements. This is a reasoning task that only AI can perform at scale.</div>
+    </div>
+    <div class="solution-card amber">
+      <div class="solution-icon">⚡</div>
+      <div class="solution-title">Action at Speed</div>
+      <div class="solution-desc">The moment a candidate is shortlisted, the clock starts. Scheduling an interview, generating a calendar invite, and sending a Google Meet link must happen in seconds — not days. Only an automated agent can act this fast.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MARKET OPPORTUNITY -->
+<div class="opportunity">
+  <h3>🎯 The Opportunity HireScreen AI Addresses</h3>
+  <p>
+    Enterprise tools like Paradox charge USD 1,000+/month and are built for companies with thousands of employees. 
+    Free ATS tools like Dover don't include AI screening. 
+    The gap in the market is an <strong>affordable, AI-native screening and scheduling tool built specifically for 10–50 person tech companies</strong> — companies that are too sophisticated for basic job boards but too lean for enterprise HR suites.
+    <br><br>
+    HireScreen AI fills this gap by taking a resume from upload to a structured AI evaluation with ATS score, JD match percentage, skills analysis, and a hiring recommendation — and then allowing HR to schedule a Google Calendar interview with one click. <strong>What previously took Sarah 14 days now takes under 2 hours.</strong>
+  </p>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div>HireScreen AI · Problem Framing Document · February 2026</div>
+  <div>Based on HR Tech market research · Agentic AI in Recruitment 2025–2034</div>
+</div>
+
+</body>
+</html>

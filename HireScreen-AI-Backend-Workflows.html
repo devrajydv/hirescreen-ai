@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireScreen AI — Backend Agent Workflows</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #1A2540;
+    --blue: #4F8EF7;
+    --green: #22C55E;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    --purple: #7C3AED;
+    --teal: #0D9488;
+    --bg: #F8FAFC;
+    --border: #E2E8F0;
+    --text: #111827;
+    --muted: #6B7280;
+    --slate: #94A3B8;
+    --dark-bg: #0F1629;
+    --dark-card: #1E2D45;
+    --dark-border: #2A3F5F;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+    color: var(--text);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 24px; border-bottom: 2px solid var(--navy); margin-bottom: 36px;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo-box {
+    width: 48px; height: 48px; background: var(--navy); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; color: white; font-size: 22px;
+  }
+  .brand-name { font-size: 24px; font-weight: 700; color: var(--navy); }
+  .brand-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .doc-type { font-size: 13px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; text-align: right; }
+  .doc-date { font-size: 12px; color: var(--muted); margin-top: 4px; text-align: right; }
+
+  /* SECTION */
+  .section { margin-bottom: 52px; }
+  .section-title {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* WORKFLOW HEADER CARD */
+  .workflow-header {
+    border-radius: 14px 14px 0 0;
+    padding: 20px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .workflow-header.screening { background: var(--navy); }
+  .workflow-header.scheduling { background: #0D3349; }
+
+  .workflow-title { font-size: 18px; font-weight: 700; color: white; }
+  .workflow-subtitle { font-size: 13px; color: var(--slate); margin-top: 3px; }
+
+  .workflow-badge {
+    font-size: 10px; font-weight: 700; padding: 4px 12px;
+    border-radius: 999px; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .badge-active { background: rgba(34,197,94,0.2); color: #22C55E; border: 1px solid rgba(34,197,94,0.4); }
+
+  /* FLOW CANVAS */
+  .flow-canvas {
+    background: var(--dark-bg);
+    border: 1px solid var(--dark-border);
+    border-radius: 0 0 14px 14px;
+    padding: 28px 24px;
+    margin-bottom: 28px;
+    overflow-x: auto;
+  }
+
+  /* NODE ROW */
+  .node-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-width: max-content;
+  }
+
+  .node-group {
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+  }
+
+  /* CONNECTOR */
+  .connector {
+    display: flex; align-items: center; gap: 0;
+    flex-shrink: 0;
+  }
+
+  .conn-line {
+    width: 28px; height: 2px;
+    background: #3A5070;
+    flex-shrink: 0;
+  }
+
+  .conn-label {
+    font-size: 8px; font-weight: 600; color: #22C55E;
+    background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
+    border-radius: 3px; padding: 1px 5px;
+    white-space: nowrap; margin: 0 2px;
+  }
+
+  .conn-label.error { color: #EF4444; background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); }
+  .conn-label.done { color: var(--amber); background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); }
+
+  /* NODE BOX */
+  .node {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px; flex-shrink: 0;
+  }
+
+  .node-icon-wrap {
+    width: 52px; height: 52px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; position: relative;
+    border: 1.5px solid #2A3F5F;
+  }
+
+  .node-icon-wrap.webhook   { background: #1E2D45; }
+  .node-icon-wrap.code      { background: #1A2E3A; }
+  .node-icon-wrap.supabase  { background: #1A2A1A; }
+  .node-icon-wrap.ai        { background: #1A1A2E; }
+  .node-icon-wrap.http      { background: #2A1A1A; }
+  .node-icon-wrap.loop      { background: #1E2D45; }
+  .node-icon-wrap.calendar  { background: #1A2040; }
+  .node-icon-wrap.split     { background: #1E2D45; }
+  .node-icon-wrap.if        { background: #2A2A1A; }
+
+  .node-num {
+    position: absolute; top: -7px; left: -7px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--blue); color: white;
+    font-size: 9px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .node-label {
+    font-size: 10px; font-weight: 600; color: white;
+    text-align: center; max-width: 68px; line-height: 1.3;
+  }
+
+  .node-sublabel {
+    font-size: 8.5px; color: var(--slate);
+    text-align: center; max-width: 68px; line-height: 1.3;
+    margin-top: -3px;
+  }
+
+  /* BRANCH INDICATOR */
+  .branch-row {
+    display: flex; align-items: flex-start; gap: 0; margin-top: 8px;
+    min-width: max-content;
+  }
+
+  .branch-spacer { width: 52px; flex-shrink: 0; }
+
+  /* NODE TABLE */
+  .node-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .node-table th {
+    padding: 10px 14px; text-align: left;
+    background: var(--navy); color: white;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .node-table th:first-child { border-radius: 8px 0 0 0; }
+  .node-table th:last-child  { border-radius: 0 8px 0 0; }
+  .node-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .node-table tr:nth-child(even) td { background: var(--bg); }
+  .node-table tr:last-child td { border-bottom: none; }
+
+  .node-tag {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .tag-webhook  { background: #EFF6FF; color: #1D4ED8; }
+  .tag-code     { background: #FFFBEB; color: #92400E; }
+  .tag-supabase { background: #F0FDF4; color: #15803D; }
+  .tag-ai       { background: #F3F0FF; color: #5B21B6; }
+  .tag-http     { background: #FEF2F2; color: #991B1B; }
+  .tag-loop     { background: #F0F9FF; color: #0369A1; }
+  .tag-calendar { background: #FFF7ED; color: #9A3412; }
+  .tag-if       { background: #FDF4FF; color: #86198F; }
+
+  .code-snippet {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: #94A3B8;
+    background: #0F1629; border-radius: 6px;
+    padding: 8px 10px; margin-top: 6px;
+    line-height: 1.6; display: block;
+  }
+
+  /* DECISION CALLOUT */
+  .callout {
+    border-radius: 10px; padding: 14px 18px; margin-top: 0;
+    font-size: 12px; line-height: 1.6;
+  }
+  .callout.blue  { background: #EFF6FF; border-left: 4px solid var(--blue); color: #1D4ED8; }
+  .callout.green { background: #F0FDF4; border-left: 4px solid var(--green); color: #15803D; }
+  .callout.amber { background: #FFFBEB; border-left: 4px solid var(--amber); color: #92400E; }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1px solid var(--border); padding-top: 16px;
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--slate); margin-top: 20px;
+  }
+
+  .arrow { color: #3A5070; font-size: 13px; margin: 0 2px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-box">🎯</div>
+    <div>
+      <div class="brand-name">HireScreen AI</div>
+      <div class="brand-sub">AI-Powered HR Resume Screening Platform</div>
+    </div>
+  </div>
+  <div>
+    <div class="doc-type">Backend Agent Workflows</div>
+    <div class="doc-date">February 2026 · n8n Automation</div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div style="background:#EFF6FF;border-radius:10px;padding:16px 20px;margin-bottom:36px;border-left:4px solid var(--blue);font-size:13px;color:#374151;line-height:1.7">
+  HireScreen AI runs two fully automated backend workflows built in <strong>n8n</strong> (a visual workflow tool running on Docker, exposed publicly via Cloudflare Tunnel). Both workflows are triggered by HTTP webhooks from the React frontend. All database operations use Supabase native nodes with AES-256 encrypted credentials — no secrets are exposed in the workflow JSON.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- WORKFLOW 1: RESUME SCREENING                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title">Workflow 1 — AI Resume Screening Pipeline</div>
+
+  <!-- HEADER CARD -->
+  <div class="workflow-header screening">
+    <div>
+      <div class="workflow-title">🤖 Resume Screening Agent</div>
+      <div class="workflow-subtitle">POST /webhook/screen-resumes · Triggered when HR clicks "Start Screening" on the frontend</div>
+    </div>
+    <span class="workflow-badge badge-active">● Active</span>
+  </div>
+
+  <!-- VISUAL FLOW -->
+  <div class="flow-canvas">
+
+    <!-- ROW 1: Main pipeline -->
+    <div class="node-row">
+
+      <div class="node">
+        <div class="node-icon-wrap webhook"><div class="node-num">1</div>🔗</div>
+        <div class="node-label">Webhook</div>
+        <div class="node-sublabel">POST trigger</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap supabase"><div class="node-num">2</div>⚡</div>
+        <div class="node-label">Fetch JD</div>
+        <div class="node-sublabel">getAll: row</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap code"><div class="node-num">3</div>{ }</div>
+        <div class="node-label">Prepare Candidates</div>
+        <div class="node-sublabel">code node</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap split"><div class="node-num">4</div>⟳</div>
+        <div class="node-label">Split in Batches</div>
+        <div class="node-sublabel">Loop node</div>
+      </div>
+      <div class="conn-line"></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
+        <div class="conn-label">items</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap supabase"><div class="node-num">5</div>⚡</div>
+        <div class="node-label">Fetch Candidate</div>
+        <div class="node-sublabel">getAll: row</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap http"><div class="node-num">6</div>🔑</div>
+        <div class="node-label">Generate Signed URL</div>
+        <div class="node-sublabel">Supabase Storage</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap http"><div class="node-num">7</div>⬇️</div>
+        <div class="node-label">Download Resume</div>
+        <div class="node-sublabel">HTTP: binary</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap code"><div class="node-num">8</div>📄</div>
+        <div class="node-label">Extract Text</div>
+        <div class="node-sublabel">Extract From PDF</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap code"><div class="node-num">9</div>{ }</div>
+        <div class="node-label">Extract Candidate Name</div>
+        <div class="node-sublabel">code node</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap supabase"><div class="node-num">10</div>⚡</div>
+        <div class="node-label">Update Candidate Name</div>
+        <div class="node-sublabel">update: row</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap ai"><div class="node-num">11</div>✨</div>
+        <div class="node-label">Preprocess Documents</div>
+        <div class="node-sublabel">Gemini AI</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap ai"><div class="node-num">12</div>🤖</div>
+        <div class="node-label">AI Agent Evaluator</div>
+        <div class="node-sublabel">Gemini AI</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap code"><div class="node-num">13</div>{ }</div>
+        <div class="node-label">Parse AI Response</div>
+        <div class="node-sublabel">code node</div>
+      </div>
+      <div class="conn-line"></div><div class="arrow">→</div><div class="conn-line"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap if"><div class="node-num">14</div>⚖️</div>
+        <div class="node-label">Check AI Response</div>
+        <div class="node-sublabel">IF node</div>
+      </div>
+
+    </div>
+
+    <!-- BRANCH ROW -->
+    <div style="display:flex;align-items:flex-start;gap:0;margin-top:10px;margin-left:1116px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="display:flex;align-items:center;gap:4px">
+          <div class="conn-label">true</div>
+          <div class="conn-line" style="width:16px"></div><div class="arrow">→</div><div class="conn-line" style="width:16px"></div>
+          <div class="node">
+            <div class="node-icon-wrap supabase" style="width:44px;height:44px"><div class="node-num" style="font-size:8px">15</div>⚡</div>
+            <div class="node-label">Save Report</div>
+            <div class="node-sublabel">create: row</div>
+          </div>
+          <div class="conn-line" style="width:12px"></div><div class="arrow">→</div><div class="conn-line" style="width:12px"></div>
+          <div class="node">
+            <div class="node-icon-wrap supabase" style="width:44px;height:44px"><div class="node-num" style="font-size:8px">16</div>✅</div>
+            <div class="node-label">Update Status Done</div>
+            <div class="node-sublabel">update: row</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:4px">
+          <div class="conn-label error">false</div>
+          <div class="conn-line" style="width:16px"></div><div class="arrow">→</div><div class="conn-line" style="width:16px"></div>
+          <div class="node">
+            <div class="node-icon-wrap supabase" style="width:44px;height:44px"><div class="node-num" style="font-size:8px">17</div>❌</div>
+            <div class="node-label">Mark Candidate Error</div>
+            <div class="node-sublabel">update: row</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Done path back to loop -->
+    <div style="margin-top:14px;display:flex;align-items:center;gap:6px">
+      <div style="font-size:9px;color:var(--slate);font-family:'DM Mono',monospace">Split in Batches</div>
+      <div class="conn-label done">done</div>
+      <div style="font-size:9px;color:var(--slate)">→</div>
+      <div class="node" style="flex-direction:row;align-items:center;gap:8px">
+        <div class="node-icon-wrap webhook" style="width:36px;height:36px">🔗</div>
+        <div>
+          <div class="node-label" style="text-align:left;max-width:none">Respond to Webhook</div>
+          <div class="node-sublabel" style="text-align:left">200 OK — pipeline complete</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NODE TABLE -->
+  <table class="node-table">
+    <thead>
+      <tr>
+        <th style="width:30px">#</th>
+        <th style="width:140px">Node</th>
+        <th style="width:80px">Type</th>
+        <th>What It Does — Agent Logic</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">01</td>
+        <td style="font-weight:600">Webhook</td>
+        <td><span class="node-tag tag-webhook">Webhook</span></td>
+        <td>Listens for POST requests at <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">/webhook/screen-resumes</code>. The frontend sends the <strong>job_id</strong> and an array of <strong>candidate_ids</strong> to screen. This is the entry point that kicks off the entire pipeline.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">02</td>
+        <td style="font-weight:600">Fetch JD</td>
+        <td><span class="node-tag tag-supabase">Supabase</span></td>
+        <td>Queries the <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">job_postings</code> table using the incoming <strong>job_id</strong>. Retrieves the job title, department, and most importantly the <strong>Job Description text</strong> (or file path) that every candidate will be evaluated against.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">03</td>
+        <td style="font-weight:600">Prepare Candidates</td>
+        <td><span class="node-tag tag-code">Code</span></td>
+        <td>Takes the <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">candidate_ids</code> array from the original Webhook data and maps each ID into a separate item — one item per candidate. This prepares the data so the Loop node can process each candidate individually in sequence.
+          <span class="code-snippet">// Maps [id1, id2, id3] → [{candidate_id: id1}, {candidate_id: id2}, ...]</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">04</td>
+        <td style="font-weight:600">Split in Batches</td>
+        <td><span class="node-tag tag-loop">Loop</span></td>
+        <td>Loops over the candidate list <strong>one at a time</strong> (batch size = 1). Each pass through the loop processes one complete candidate: download → extract → screen → save. Once all candidates are done, the loop exits via the <strong>"done"</strong> output and triggers the final webhook response.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">05</td>
+        <td style="font-weight:600">Fetch Candidate</td>
+        <td><span class="node-tag tag-supabase">Supabase</span></td>
+        <td>For each loop iteration, fetches the full candidate row from the <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">candidates</code> table. Retrieves the <strong>resume_file_path</strong> (storage path in Supabase), <strong>job_id</strong>, and current status — everything needed for the next steps.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">06</td>
+        <td style="font-weight:600">Generate Signed URL</td>
+        <td><span class="node-tag tag-http">HTTP</span></td>
+        <td>Calls the Supabase Storage sign API to generate a <strong>temporary 60-second download URL</strong> for the candidate's resume file. The bucket is private — direct access is blocked. A signed URL is the only secure way to download the file. After 60 seconds the URL expires and is useless.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">07</td>
+        <td style="font-weight:600">Download Resume</td>
+        <td><span class="node-tag tag-http">HTTP</span></td>
+        <td>Uses the signed URL from step 6 to download the actual PDF binary. No auth header needed — the signature is embedded in the URL. Returns the file as binary data ready for text extraction.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">08</td>
+        <td style="font-weight:600">Extract Text</td>
+        <td><span class="node-tag tag-code">Code</span></td>
+        <td>Uses the <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">pdf-parse</code> library to extract all raw text content from the PDF binary. Handles multi-page PDFs, different fonts, and varied formatting. Outputs a single clean string of all resume text.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">09</td>
+        <td style="font-weight:600">Extract Candidate Name</td>
+        <td><span class="node-tag tag-code">Code</span></td>
+        <td>Scans the first 500 characters of the resume text to auto-extract the candidate's <strong>full name</strong> (first clean line), <strong>email</strong> (regex match), and <strong>phone number</strong> (regex match). This means HR never needs to manually enter candidate contact info after uploading.
+          <span class="code-snippet">const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">10</td>
+        <td style="font-weight:600">Update Candidate Name</td>
+        <td><span class="node-tag tag-supabase">Supabase</span></td>
+        <td>Writes the extracted <strong>full_name</strong>, <strong>email</strong>, and <strong>phone</strong> back to the <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">candidates</code> table. After this step, the candidate card on the frontend shows real identity data instead of the raw filename.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">11</td>
+        <td style="font-weight:600">Preprocess Documents</td>
+        <td><span class="node-tag tag-ai">Gemini AI</span></td>
+        <td><strong>First AI call.</strong> Takes the full raw JD + full raw resume text and condenses both into a compact plain-text summary (key:value format). Reduces the combined ~4,000 token input down to ~500 tokens so the evaluator receives clean, complete data within the free-tier output limit. Prevents JSON truncation.
+          <span class="code-snippet">REQUIRED_SKILLS: TypeScript, Node.js&#10;CANDIDATE_SKILLS: TypeScript, React&#10;MIN_EXPERIENCE: 5 · CANDIDATE_EXPERIENCE: 6</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">12</td>
+        <td style="font-weight:600">AI Agent Evaluator</td>
+        <td><span class="node-tag tag-ai">Gemini AI</span></td>
+        <td><strong>Second AI call — the core intelligence.</strong> Receives the condensed summary from step 11 and produces a structured JSON evaluation: <strong>ats_score</strong> (0–100), <strong>jd_match_percentage</strong>, <strong>skills_matched</strong> array, <strong>skills_missing</strong> array, <strong>strengths</strong>, <strong>weaknesses</strong>, <strong>experience_years</strong>, <strong>education</strong>, and a <strong>recommend</strong> (Yes/Maybe/No) decision.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">13</td>
+        <td style="font-weight:600">Parse AI Response</td>
+        <td><span class="node-tag tag-code">Code</span></td>
+        <td>Extracts valid JSON from the AI's text output. Uses <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">indexOf('{')</code> and <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">lastIndexOf('}')</code> to strip any markdown fences or extra text Gemini might add. Falls back to safe default values if parsing fails — ensuring the pipeline never crashes on a malformed AI response.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">14</td>
+        <td style="font-weight:600">Check AI Response</td>
+        <td><span class="node-tag tag-if">IF</span></td>
+        <td>Decision gate. Checks if <strong>ats_score exists as a number</strong> in the parsed output. <strong>True path:</strong> valid AI response → proceed to save the report. <strong>False path:</strong> AI failed or returned garbage → mark the candidate with an error status so HR knows manual review is needed.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">15</td>
+        <td style="font-weight:600">Save Report</td>
+        <td><span class="node-tag tag-supabase">Supabase</span></td>
+        <td>Creates a new row in the <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">screening_reports</code> table with all AI evaluation fields: ats_score, jd_match_percentage, skills_matched, skills_missing, strengths, weaknesses, recommendation, experience_years, education. Also saves the <strong>job_id</strong> so reports are filterable by role on the Reports page.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">16</td>
+        <td style="font-weight:600">Update Status Done</td>
+        <td><span class="node-tag tag-supabase">Supabase</span></td>
+        <td>Sets the candidate's <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">upload_status</code> to <strong>"screened"</strong> in the candidates table. The frontend listens for this change in real-time via Supabase's real-time subscriptions — the candidate row on the dashboard turns green instantly without a page refresh.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue)">17</td>
+        <td style="font-weight:600">Mark Candidate Error</td>
+        <td><span class="node-tag tag-supabase">Supabase</span></td>
+        <td>If the AI check fails, sets <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">upload_status</code> to <strong>"error"</strong>. The candidate still appears on the dashboard but with a red error badge so HR knows to manually review or re-upload that resume.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout blue" style="margin-top:16px">
+    <strong>Agent Logic Summary:</strong> This is a sequential agentic pipeline — each node has a single responsibility and passes its output to the next. The two-AI-call design (preprocess → evaluate) is the key architectural decision that makes the pipeline reliable within Gemini's free-tier token limits. The IF gate at node 14 is the only branching point, ensuring failed AI calls are handled gracefully without crashing the loop.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- WORKFLOW 2: INTERVIEW SCHEDULING                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title">Workflow 2 — Interview Scheduling Agent</div>
+
+  <div class="workflow-header scheduling">
+    <div>
+      <div class="workflow-title">📅 Interview Scheduling Agent</div>
+      <div class="workflow-subtitle">POST /webhook/schedule-interview · Triggered when HR clicks "Schedule Interview" on the frontend</div>
+    </div>
+    <span class="workflow-badge badge-active">● Active</span>
+  </div>
+
+  <!-- VISUAL FLOW -->
+  <div class="flow-canvas">
+    <div class="node-row" style="justify-content:center;gap:0">
+
+      <div class="node">
+        <div class="node-icon-wrap webhook"><div class="node-num">1</div>🔗</div>
+        <div class="node-label">Webhook</div>
+        <div class="node-sublabel">POST trigger</div>
+      </div>
+      <div class="conn-line" style="width:36px"></div><div class="arrow">→</div><div class="conn-line" style="width:36px"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap code"><div class="node-num">2</div>{ }</div>
+        <div class="node-label">Prepare Attendees</div>
+        <div class="node-sublabel">code node</div>
+      </div>
+      <div class="conn-line" style="width:36px"></div><div class="arrow">→</div><div class="conn-line" style="width:36px"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap calendar"><div class="node-num">3</div>📅</div>
+        <div class="node-label">Create an Event</div>
+        <div class="node-sublabel">Google Calendar</div>
+      </div>
+      <div class="conn-line" style="width:36px"></div><div class="arrow">→</div><div class="conn-line" style="width:36px"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap code"><div class="node-num">4</div>{ }</div>
+        <div class="node-label">Extract Meet Link</div>
+        <div class="node-sublabel">code node</div>
+      </div>
+      <div class="conn-line" style="width:36px"></div><div class="arrow">→</div><div class="conn-line" style="width:36px"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap supabase"><div class="node-num">5</div>⚡</div>
+        <div class="node-label">Update a Row</div>
+        <div class="node-sublabel">update: row</div>
+      </div>
+      <div class="conn-line" style="width:36px"></div><div class="arrow">→</div><div class="conn-line" style="width:36px"></div>
+
+      <div class="node">
+        <div class="node-icon-wrap webhook"><div class="node-num">6</div>✅</div>
+        <div class="node-label">Respond to Webhook</div>
+        <div class="node-sublabel">200 OK</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NODE TABLE -->
+  <table class="node-table">
+    <thead>
+      <tr>
+        <th style="width:30px">#</th>
+        <th style="width:140px">Node</th>
+        <th style="width:80px">Type</th>
+        <th>What It Does — Agent Logic</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal)">01</td>
+        <td style="font-weight:600">Webhook</td>
+        <td><span class="node-tag tag-webhook">Webhook</span></td>
+        <td>Listens for POST requests at <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">/webhook/schedule-interview</code>. The frontend sends a payload containing: <strong>interview_id</strong>, <strong>candidate_id</strong>, <strong>candidate_name</strong>, <strong>candidate_email</strong>, <strong>interviewer_emails[]</strong> (array of up to 4), <strong>interview_date</strong> (ISO string), <strong>duration_minutes</strong>, <strong>job_title</strong>, and <strong>notes</strong>.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal)">02</td>
+        <td style="font-weight:600">Prepare Attendees</td>
+        <td><span class="node-tag tag-code">Code</span></td>
+        <td>Transforms the <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">interviewer_emails</code> array into individual named fields (<strong>interviewer_1</strong> through <strong>interviewer_4</strong>). Also converts the interview date string from IST to a proper UTC ISO format so Google Calendar doesn't get confused by timezone mismatches. Fields with no interviewer are set to <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">null</code> and are skipped by the next node.
+          <span class="code-snippet">startUTC = new Date(interview_date).toISOString()&#10;endUTC   = new Date(startUTC + duration_minutes * 60000).toISOString()</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal)">03</td>
+        <td style="font-weight:600">Create an Event</td>
+        <td><span class="node-tag tag-calendar">Calendar</span></td>
+        <td>Creates a Google Calendar event via the Calendar API using OAuth credentials. Key settings: <strong>conferenceData = true</strong> generates an automatic Google Meet link. Attendees include the candidate + up to 4 interviewers (null attendees are skipped cleanly). Title format: <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">"Interview: [Candidate Name] for [Job Title]"</code>. All attendees receive a Calendar invite and Meet link by email automatically.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal)">04</td>
+        <td style="font-weight:600">Extract Meet Link</td>
+        <td><span class="node-tag tag-code">Code</span></td>
+        <td>Parses the Google Calendar API response to extract the <strong>Google Meet URL</strong> and the <strong>Google Event ID</strong>. The Meet link is nested inside <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">conferenceData.entryPoints</code> — this node navigates that structure and surfaces the URL cleanly for the next step. Also passes through the original <strong>interview_id</strong> and <strong>candidate_id</strong> for the database update.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal)">05</td>
+        <td style="font-weight:600">Update a Row</td>
+        <td><span class="node-tag tag-supabase">Supabase</span></td>
+        <td>Updates the existing row in the <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">interview_schedules</code> table (identified by <strong>interview_id</strong>) with three new values: <strong>google_meet_link</strong>, <strong>google_event_id</strong>, and <strong>status = "scheduled"</strong>. This is an UPDATE not an INSERT — the row already exists from when HR first created the interview record on the frontend.</td>
+      </tr>
+      <tr>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal)">06</td>
+        <td style="font-weight:600">Respond to Webhook</td>
+        <td><span class="node-tag tag-webhook">Webhook</span></td>
+        <td>Returns a <strong>200 OK</strong> response to the frontend with the Google Meet link included in the response body. The frontend uses this to display the join link immediately on the Interviews page without needing a page refresh.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout green" style="margin-top:16px">
+    <strong>Agent Logic Summary:</strong> This is a lean 6-node linear pipeline with no branching. Its intelligence is in node 2 (timezone normalisation + null-safe attendee handling) and node 3 (automatic Meet link generation). The key design decision was making this workflow UPDATE an existing interview row rather than INSERT a new one — preventing duplicate records when the frontend triggers the webhook.
+  </div>
+</div>
+
+<!-- DESIGN DECISIONS -->
+<div class="section">
+  <div class="section-title">Key Design Decisions Across Both Workflows</div>
+  <table class="node-table">
+    <thead>
+      <tr><th>Decision</th><th>What Was Done</th><th>Why It Matters</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:600">Encrypted Credentials</td>
+        <td>All API keys (Supabase, Gemini, Google Calendar) stored in n8n's AES-256 credential store</td>
+        <td>Workflow JSON can be safely exported and shared without exposing any secrets</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600">Batch Size = 1</td>
+        <td>Resume screening loop processes one candidate at a time, not in parallel</td>
+        <td>Prevents Gemini API rate limit errors and eliminates race conditions on DB writes</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600">Two AI Calls</td>
+        <td>Preprocess first, then evaluate — rather than one single large call</td>
+        <td>Keeps both inputs and outputs within Gemini free-tier token limits reliably</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600">Signed URLs for Storage</td>
+        <td>Generate a 60-second temporary URL before downloading each resume</td>
+        <td>Supabase private bucket requires signed URLs — direct API key downloads are blocked by design</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600">Defensive JSON Parsing</td>
+        <td>Extract JSON between first <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">{</code> and last <code style="font-family:'DM Mono',monospace;font-size:11px;background:#F1F5F9;padding:1px 5px;border-radius:3px">}</code> with try/catch fallback</td>
+        <td>AI models sometimes wrap JSON in code fences regardless of instructions — this handles it gracefully</td>
+      </tr>
+      <tr>
+        <td style="font-weight:600">Cloudflare Tunnel</td>
+        <td>n8n runs on Docker locally, exposed publicly via Cloudflare Tunnel HTTPS URL</td>
+        <td>Allows the cloud-hosted Lovable frontend to call the local n8n instance without CORS errors</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div>HireScreen AI · Backend Agent Workflows · February 2026</div>
+  <div>n8n (Docker) · Supabase · Gemini AI · Google Calendar API · Cloudflare Tunnel</div>
+</div>
+
+</body>
+</html>

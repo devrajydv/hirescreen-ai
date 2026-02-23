@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireScreen AI — UX Wireframes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #1A2540;
+    --blue: #4F8EF7;
+    --green: #22C55E;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    --bg: #F8FAFC;
+    --white: #FFFFFF;
+    --text: #111827;
+    --muted: #6B7280;
+    --border: #E2E8F0;
+    --slate: #94A3B8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0A0F1E;
+    color: #F8FAFC;
+    padding: 40px 20px;
+  }
+
+  .doc-header {
+    text-align: center;
+    margin-bottom: 60px;
+    padding: 40px;
+    background: linear-gradient(135deg, #1A2540 0%, #0F1829 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(79, 142, 247, 0.3);
+  }
+
+  .doc-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 8px;
+  }
+
+  .doc-header p {
+    color: #94A3B8;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .badge-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    background: rgba(79, 142, 247, 0.15);
+    border: 1px solid rgba(79, 142, 247, 0.4);
+    color: #4F8EF7;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .page-section {
+    margin-bottom: 60px;
+  }
+
+  .page-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .page-num {
+    background: var(--blue);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .page-title-text {
+    font-size: 22px;
+    font-weight: 700;
+    color: #F8FAFC;
+  }
+
+  .page-route {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #4F8EF7;
+    background: rgba(79, 142, 247, 0.1);
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-left: auto;
+  }
+
+  .wireframe {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  /* Browser chrome */
+  .browser-bar {
+    background: #1E2A3A;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .browser-dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-red { background: #FF5F57; }
+  .dot-amber { background: #FFBD2E; }
+  .dot-green { background: #28C840; }
+
+  .browser-url {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #94A3B8;
+    margin: 0 12px;
+  }
+
+  /* ========== APP SHELL ========== */
+  .app-shell {
+    display: flex;
+    height: 580px;
+    background: var(--bg);
+  }
+
+  .sidebar {
+    width: 72px;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    gap: 10px;
+  }
+
+  .sidebar-logo {
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
+  .nav-item {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .nav-item.active { background: var(--blue); }
+  .nav-item.inactive { background: transparent; opacity: 0.5; }
+  .nav-item.bottom { margin-top: auto; }
+
+  .main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .top-bar {
+    height: 56px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    flex-shrink: 0;
+  }
+
+  .top-bar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .user-name { font-size: 14px; color: #374151; }
+
+  .content-area {
+    flex: 1;
+    padding: 24px;
+    overflow: auto;
+    background: var(--bg);
+  }
+
+  /* ========== CARDS ========== */
+  .card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+
+  .card-pad { padding: 20px; }
+
+  /* STAT CARDS */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .stat-value { font-size: 26px; font-weight: 700; color: var(--text); }
+
+  /* TABLE */
+  .table-wrap {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .table-head {
+    display: grid;
+    padding: 12px 16px;
+    background: #F8FAFC;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .table-row {
+    display: grid;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    font-size: 13px;
+  }
+
+  .table-row:last-child { border-bottom: none; }
+  .table-row:nth-child(even) { background: #FAFAFA; }
+
+  /* PILLS / BADGES */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .pill-green { background: #F0FDF4; color: #16A34A; }
+  .pill-amber { background: #FFFBEB; color: #D97706; }
+  .pill-red { background: #FEF2F2; color: #DC2626; }
+  .pill-blue { background: #EFF6FF; color: #4F8EF7; }
+  .pill-grey { background: #F1F5F9; color: #64748B; }
+  .pill-purple { background: #F3F0FF; color: #7C3AED; }
+
+  /* BUTTONS */
+  .btn-primary {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 16px;
+    height: 40px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-ghost {
+    background: white;
+    color: var(--blue);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 16px;
+    height: 40px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* INPUT */
+  .input-field {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    height: 40px;
+    font-size: 13px;
+    color: var(--text);
+    background: white;
+    width: 100%;
+  }
+
+  /* ========== LOGIN PAGE ========== */
+  .login-split {
+    display: flex;
+    height: 580px;
+  }
+
+  .login-left {
+    width: 50%;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 12px;
+  }
+
+  .login-logo-big {
+    width: 56px;
+    height: 56px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 14px;
+    margin-bottom: 8px;
+  }
+
+  .login-brand { font-size: 26px; font-weight: 700; color: white; }
+  .login-tagline { font-size: 14px; color: #94A3B8; text-align: center; }
+
+  .login-bullets {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-self: stretch;
+  }
+
+  .bullet-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+  }
+
+  .bullet-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    flex-shrink: 0;
+  }
+
+  .login-right {
+    width: 50%;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-card {
+    background: white;
+    border-radius: 12px;
+    padding: 36px;
+    width: 360px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border: 1px solid var(--border);
+  }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; display: block; }
+  .divider-line { display: flex; align-items: center; gap: 12px; margin: 14px 0; }
+  .divider-line::before, .divider-line::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .divider-text { font-size: 12px; color: var(--slate); }
+
+  /* PROGRESS */
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--blue);
+    border-radius: 999px;
+  }
+
+  /* SCORE CIRCLE */
+  .score-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* DRAWER */
+  .drawer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 300px;
+    background: white;
+    border-left: 1px solid var(--border);
+    box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+    overflow: auto;
+    padding: 20px;
+  }
+
+  /* DESCRIPTION TEXT */
+  .page-desc {
+    font-size: 13px;
+    color: #94A3B8;
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: rgba(79,142,247,0.08);
+    border-radius: 8px;
+    border-left: 3px solid var(--blue);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <h1>🎯 HireScreen AI</h1>
+  <p>UX Wireframes — All 10 Pages · AI-Powered HR Resume Screening Platform</p>
+  <div class="badge-row">
+    <span class="badge">React Frontend</span>
+    <span class="badge">Supabase Auth + DB</span>
+    <span class="badge">n8n Automation</span>
+    <span class="badge">Gemini AI</span>
+    <span class="badge">Google Calendar</span>
+  </div>
+</div>
+
+<!-- ========== PAGE 0: APP SHELL ========== -->
+<div class="page-section">
+  <div class="page-label">
+    <div class="page-num">0</div>
+    <div class="page-title-text">Global App Shell & Navigation</div>
+    <div class="page-route">All protected routes</div>
+  </div>
+  <p class="page-desc">Fixed 72px dark navy sidebar with icon-only capsule nav buttons. Top bar shows current page title and user avatar. All routes protected by Supabase Auth session check.</p>
+  <div class="wireframe">
+    <div class="browser-bar">
+      <div class="browser-dots"><div class="dot dot-red"></div><div class="dot dot-amber"></div><div class="dot dot-green"></div></div>
+      <div class="browser-url">aihirescreen.lovable.app/</div>
+    </div>
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"></div>
+        <div class="nav-item active" title="Dashboard">🏠</div>
+        <div class="nav-item inactive" title="Jobs">💼</div>
+        <div class="nav-item inactive" title="Upload">⬆️</div>
+        <div class="nav-item inactive" title="Candidates">👥</div>
+        <div class="nav-item inactive" title="Reports">📊</div>
+        <div class="nav-item inactive" title="Interviews">📅</div>
+        <div class="nav-item inactive bottom" title="Settings">⚙️</div>
+      </div>
+      <div class="main-area">
+        <div class="top-bar">
+          <div class="top-bar-title">Dashboard</div>
+          <div class="user-pill">
+            <div class="avatar">HR</div>
+            <div class="user-name">HR Manager</div>
+          </div>
+        </div>
+        <div class="content-area">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#EFF6FF">💼</div>
+              <div><div class="stat-label">Active Jobs</div><div class="stat-value">4</div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#F3F0FF">👥</div>
+              <div><div class="stat-label">Screened</div><div class="stat-value">28</div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#FFFBEB">⏳</div>
+              <div><div class="stat-label">Pending</div><div class="stat-value">7</div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#F0FDF4">📅</div>
+              <div><div class="stat-label">Interviews</div><div class="stat-value">3</div></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px">
+            <div class="card card-pad">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px">Recent Activity</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:8px">
+                  <div class="stat-icon" style="background:#EFF6FF;width:32px;height:32px;font-size:14px">📄</div>
+                  <div style="flex:1;font-size:12px;color:#374151">Alex Rivera screened for PRD Manager</div>
+                  <div style="font-size:11px;color:var(--slate)">2m ago</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:8px">
+                  <div class="stat-icon" style="background:#F0FDF4;width:32px;height:32px;font-size:14px">✅</div>
+                  <div style="flex:1;font-size:12px;color:#374151">Sarah Chen shortlisted for SWE role</div>
+                  <div style="font-size:11px;color:var(--slate)">1h ago</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:8px">
+                  <div class="stat-icon" style="background:#FFFBEB;width:32px;height:32px;font-size:14px">📅</div>
+                  <div style="flex:1;font-size:12px;color:#374151">Interview scheduled for James Liu</div>
+                  <div style="font-size:11px;color:var(--slate)">3h ago</div>
+                </div>
+              </div>
+            </div>
+            <div class="card card-pad">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px">Quick Actions</div>
+              <button class="btn-primary" style="width:100%;margin-bottom:8px;justify-content:center">＋ New Job Posting</button>
+              <button class="btn-ghost" style="width:100%">↑ Upload Resumes</button>
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin:16px 0 10px">Top Candidates</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                  <div class="avatar" style="width:28px;height:28px;font-size:10px;background:#22C55E">AR</div>
+                  <div style="flex:1;font-size:12px">Alex Rivera</div>
+                  <div class="score-circle" style="background:#22C55E;width:28px;height:28px;font-size:11px">82</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 0">
+                  <div class="avatar" style="width:28px;height:28px;font-size:10px;background:#F59E0B">SC</div>
+                  <div style="flex:1;font-size:12px">Sarah Chen</div>
+                  <div class="score-circle" style="background:#F59E0B;width:28px;height:28px;font-size:11px">71</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 1: LOGIN ========== -->
+<div class="page-section">
+  <div class="page-label">
+    <div class="page-num">1</div>
+    <div class="page-title-text">Login Page</div>
+    <div class="page-route">/login</div>
+  </div>
+  <p class="page-desc">Split layout. Left branded panel with platform identity. Right panel with email/password form and Google OAuth. No sidebar shown. Redirects to /dashboard on success.</p>
+  <div class="wireframe">
+    <div class="browser-bar">
+      <div class="browser-dots"><div class="dot dot-red"></div><div class="dot dot-amber"></div><div class="dot dot-green"></div></div>
+      <div class="browser-url">aihirescreen.lovable.app/login</div>
+    </div>
+    <div class="login-split">
+      <div class="login-left">
+        <div class="login-logo-big"></div>
+        <div class="login-brand">HireScreen AI</div>
+        <div class="login-tagline">Smart resume screening powered by AI</div>
+        <div class="login-bullets">
+          <div class="bullet-item"><div class="bullet-dot"></div>AI-powered ATS scoring</div>
+          <div class="bullet-item"><div class="bullet-dot"></div>Instant JD match analysis</div>
+          <div class="bullet-item"><div class="bullet-dot"></div>One-click interview scheduling</div>
+        </div>
+      </div>
+      <div class="login-right">
+        <div class="login-card">
+          <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px">Welcome back</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Sign in to your HR account</div>
+          <button style="width:100%;height:44px;border:1px solid var(--border);border-radius:8px;background:white;font-size:13px;color:#374151;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;cursor:pointer">🔍 Continue with Google</button>
+          <div class="divider-line"><span class="divider-text">or</span></div>
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <div class="input-field" style="display:flex;align-items:center;color:var(--slate)">you@company.com</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-field" style="display:flex;align-items:center;color:var(--slate)">••••••••</div>
+          </div>
+          <div style="text-align:right;margin-bottom:14px;font-size:12px;color:var(--blue)">Forgot password?</div>
+          <button class="btn-primary" style="width:100%;justify-content:center;height:44px">Sign In</button>
+          <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted)">Don't have an account? <span style="color:var(--blue)">Sign up</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 2: SIGNUP ========== -->
+<div class="page-section">
+  <div class="page-label">
+    <div class="page-num">2</div>
+    <div class="page-title-text">Sign Up Page</div>
+    <div class="page-route">/signup</div>
+  </div>
+  <p class="page-desc">Same split layout as Login. Right panel has registration form with Full Name, Work Email, Password, Confirm Password. Client-side match validation. Success state shows email confirmation message.</p>
+  <div class="wireframe">
+    <div class="browser-bar">
+      <div class="browser-dots"><div class="dot dot-red"></div><div class="dot dot-amber"></div><div class="dot dot-green"></div></div>
+      <div class="browser-url">aihirescreen.lovable.app/signup</div>
+    </div>
+    <div class="login-split">
+      <div class="login-left">
+        <div class="login-logo-big"></div>
+        <div class="login-brand">HireScreen AI</div>
+        <div class="login-tagline">Smart resume screening powered by AI</div>
+        <div class="login-bullets">
+          <div class="bullet-item"><div class="bullet-dot"></div>AI-powered ATS scoring</div>
+          <div class="bullet-item"><div class="bullet-dot"></div>Instant JD match analysis</div>
+          <div class="bullet-item"><div class="bullet-dot"></div>One-click interview scheduling</div>
+        </div>
+      </div>
+      <div class="login-right">
+        <div class="login-card">
+          <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px">Create your account</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Set up your HR staff account</div>
+          <button style="width:100%;height:44px;border:1px solid var(--border);border-radius:8px;background:white;font-size:13px;color:#374151;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;cursor:pointer">🔍 Continue with Google</button>
+          <div class="divider-line"><span class="divider-text">or</span></div>
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <div class="input-field" style="display:flex;align-items:center;color:var(--slate)">Jane Smith</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Work Email</label>
+            <div class="input-field" style="display:flex;align-items:center;color:var(--slate)">you@company.com</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-field" style="display:flex;align-items:center;color:var(--slate)">Min 8 characters</div>
+          </div>
+          <button class="btn-primary" style="width:100%;justify-content:center;height:44px;margin-top:4px">Create Account</button>
+          <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--muted)">Already have an account? <span style="color:var(--blue)">Sign in</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 3: DASHBOARD ========== -->
+<div class="page-section">
+  <div class="page-label">
+    <div class="page-num">3</div>
+    <div class="page-title-text">Dashboard</div>
+    <div class="page-route">/</div>
+  </div>
+  <p class="page-desc">At-a-glance overview. 4 stat cards (active jobs, screened, pending, interviews). Recent activity feed on left. Quick actions + top candidates mini-table on right. All data from Supabase.</p>
+  <div class="wireframe">
+    <div class="browser-bar">
+      <div class="browser-dots"><div class="dot dot-red"></div><div class="dot dot-amber"></div><div class="dot dot-green"></div></div>
+      <div class="browser-url">aihirescreen.lovable.app/</div>
+    </div>
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"></div>
+        <div class="nav-item active">🏠</div>
+        <div class="nav-item inactive">💼</div>
+        <div class="nav-item inactive">⬆️</div>
+        <div class="nav-item inactive">👥</div>
+        <div class="nav-item inactive">📊</div>
+        <div class="nav-item inactive">📅</div>
+        <div class="nav-item inactive bottom">⚙️</div>
+      </div>
+      <div class="main-area">
+        <div class="top-bar">
+          <div class="top-bar-title">Dashboard</div>
+          <div class="user-pill"><div class="avatar">HR</div><div class="user-name">HR Manager</div></div>
+        </div>
+        <div class="content-area">
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-icon" style="background:#EFF6FF">💼</div><div><div class="stat-label">Active Jobs</div><div class="stat-value">4</div></div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#F3F0FF">👥</div><div><div class="stat-label">Screened</div><div class="stat-value">28</div></div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#FFFBEB">⏳</div><div><div class="stat-label">Pending</div><div class="stat-value">7</div></div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#F0FDF4">📅</div><div><div class="stat-label">Interviews</div><div class="stat-value">3</div></div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px">
+            <div class="card card-pad" style="font-size:12px">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px">Recent Activity</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--border);border-radius:8px"><span style="font-size:16px">📄</span><span style="flex:1;color:#374151">Alex Rivera screened for PRD Manager</span><span style="color:var(--slate);font-size:11px">2m ago</span></div>
+                <div style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--border);border-radius:8px"><span style="font-size:16px">✅</span><span style="flex:1;color:#374151">Sarah Chen shortlisted for SWE</span><span style="color:var(--slate);font-size:11px">1h ago</span></div>
+                <div style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--border);border-radius:8px"><span style="font-size:16px">📅</span><span style="flex:1;color:#374151">Interview scheduled for James Liu</span><span style="color:var(--slate);font-size:11px">3h ago</span></div>
+              </div>
+            </div>
+            <div class="card card-pad">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px">Quick Actions</div>
+              <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:8px;font-size:12px">＋ New Job Posting</button>
+              <button class="btn-ghost" style="width:100%;font-size:12px">↑ Upload Resumes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 4: JOB POSTINGS ========== -->
+<div class="page-section">
+  <div class="page-label">
+    <div class="page-num">4</div>
+    <div class="page-title-text">Job Postings</div>
+    <div class="page-route">/jobs</div>
+  </div>
+  <p class="page-desc">Full CRUD for job postings. Search, filter by status. Table with Eye/Edit/Delete actions. New Job modal with title, department, status toggle, JD paste or file upload. Row click → candidates for that job.</p>
+  <div class="wireframe">
+    <div class="browser-bar">
+      <div class="browser-dots"><div class="dot dot-red"></div><div class="dot dot-amber"></div><div class="dot dot-green"></div></div>
+      <div class="browser-url">aihirescreen.lovable.app/jobs</div>
+    </div>
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"></div>
+        <div class="nav-item inactive">🏠</div>
+        <div class="nav-item active">💼</div>
+        <div class="nav-item inactive">⬆️</div>
+        <div class="nav-item inactive">👥</div>
+        <div class="nav-item inactive">📊</div>
+        <div class="nav-item inactive">📅</div>
+        <div class="nav-item inactive bottom">⚙️</div>
+      </div>
+      <div class="main-area">
+        <div class="top-bar">
+          <div class="top-bar-title">Job Postings</div>
+          <div class="user-pill"><div class="avatar">HR</div><div class="user-name">HR Manager</div></div>
+        </div>
+        <div class="content-area">
+          <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center">
+            <div class="input-field" style="width:240px;display:flex;align-items:center;color:var(--slate);font-size:13px">🔍 Search by title...</div>
+            <select class="input-field" style="width:140px">
+              <option>All Statuses</option>
+              <option>Open</option>
+              <option>Draft</option>
+            </select>
+            <button class="btn-primary" style="margin-left:auto">＋ New Job Posting</button>
+          </div>
+          <div class="table-wrap">
+            <div class="table-head" style="grid-template-columns:2fr 1fr 1fr 1fr 0.8fr 0.8fr">
+              <span>Title</span><span>Department</span><span>Status</span><span>Date Created</span><span># Candidates</span><span>Actions</span>
+            </div>
+            <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 0.8fr 0.8fr">
+              <span style="font-weight:600;color:var(--text)">PRD Manager</span>
+              <span style="color:var(--muted)">Product</span>
+              <span><div class="pill pill-green">open</div></span>
+              <span style="color:var(--muted)">Feb 20, 2026</span>
+              <span style="color:#374151">3</span>
+              <span style="display:flex;gap:8px">👁️ ✏️ 🗑️</span>
+            </div>
+            <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 0.8fr 0.8fr">
+              <span style="font-weight:600;color:var(--text)">Senior SWE</span>
+              <span style="color:var(--muted)">Engineering</span>
+              <span><div class="pill pill-green">open</div></span>
+              <span style="color:var(--muted)">Feb 18, 2026</span>
+              <span style="color:#374151">5</span>
+              <span style="display:flex;gap:8px">👁️ ✏️ 🗑️</span>
+            </div>
+            <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 0.8fr 0.8fr">
+              <span style="font-weight:600;color:var(--text)">UX Designer</span>
+              <span style="color:var(--muted)">Design</span>
+              <span><div class="pill pill-amber">draft</div></span>
+              <span style="color:var(--muted)">Feb 15, 2026</span>
+              <span style="color:#374151">0</span>
+              <span style="display:flex;gap:8px">👁️ ✏️ 🗑️</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 5: UPLOAD & SCREEN ========== -->
+<div class="page-section">
+  <div class="page-label">
+    <div class="page-num">5</div>
+    <div class="page-title-text">Upload & Screen</div>
+    <div class="page-route">/upload</div>
+  </div>
+  <p class="page-desc">3-step flow: select job → upload resumes → start screening. Drag-and-drop zone with per-file status badges. On submit uploads to Supabase Storage, creates candidate rows, fires n8n webhook. Realtime status updates.</p>
+  <div class="wireframe">
+    <div class="browser-bar">
+      <div class="browser-dots"><div class="dot dot-red"></div><div class="dot dot-amber"></div><div class="dot dot-green"></div></div>
+      <div class="browser-url">aihirescreen.lovable.app/upload</div>
+    </div>
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"></div>
+        <div class="nav-item inactive">🏠</div>
+        <div class="nav-item inactive">💼</div>
+        <div class="nav-item active">⬆️</div>
+        <div class="nav-item inactive">👥</div>
+        <div class="nav-item inactive">📊</div>
+        <div class="nav-item inactive">📅</div>
+        <div class="nav-item inactive bottom">⚙️</div>
+      </div>
+      <div class="main-area">
+        <div class="top-bar">
+          <div class="top-bar-title">Upload & Screen</div>
+          <div class="user-pill"><div class="avatar">HR</div><div class="user-name">HR Manager</div></div>
+        </div>
+        <div class="content-area">
+          <div style="max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px">
+            <div class="card card-pad">
+              <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Step 1 — Select a Job Posting</div>
+              <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px">Which role are you screening for?</div>
+              <div class="input-field" style="display:flex;align-items:center;color:var(--text)">PRD Manager — Product ▾</div>
+            </div>
+            <div class="card card-pad">
+              <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Step 2 — Upload Resumes</div>
+              <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px">Drop candidate resumes here</div>
+              <div style="border:2px dashed var(--border);border-radius:12px;height:130px;background:#F8FAFC;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+                <div style="font-size:28px">☁️</div>
+                <div style="font-size:13px;color:var(--muted)">Drag & drop PDF, DOCX, or TXT files</div>
+                <div style="font-size:12px;color:var(--slate)">or <span style="color:var(--blue)">Browse Files</span></div>
+              </div>
+              <div style="margin-top:12px">
+                <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px">Queued Files (2)</div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px">
+                  <span style="color:#EF4444">📄</span>
+                  <div style="flex:1"><div style="font-size:12px;color:#374151">alex_rivera_resume.pdf</div><div style="font-size:11px;color:var(--slate)">245 KB</div></div>
+                  <div class="pill pill-green" style="font-size:10px">Done</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px">
+                  <span style="color:#EF4444">📄</span>
+                  <div style="flex:1"><div style="font-size:12px;color:#374151">sarah_chen_cv.pdf</div><div style="font-size:11px;color:var(--slate)">198 KB</div></div>
+                  <div class="pill pill-blue" style="font-size:10px">Processing...</div>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="padding:16px 20px">
+              <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Step 3 — Start Screening</div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="font-size:13px;color:#374151">2 resumes ready for PRD Manager</div>
+                <button class="btn-primary" style="height:44px;font-size:14px">🚀 Start Screening</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 6: CANDIDATES ========== -->
+<div class="page-section">
+  <div class="page-label">
+    <div class="page-num">6</div>
+    <div class="page-title-text">Candidates</div>
+    <div class="page-route">/candidates</div>
+  </div>
+  <p class="page-desc">Master candidate list with filters. ATS score circular badge, JD match progress bar, recommendation and decision pills. Clicking row opens profile drawer with AI Report and Resume Preview tabs. Shortlist/Hold/Reject actions at bottom of drawer.</p>
+  <div class="wireframe">
+    <div class="browser-bar">
+      <div class="browser-dots"><div class="dot dot-red"></div><div class="dot dot-amber"></div><div class="dot dot-green"></div></div>
+      <div class="browser-url">aihirescreen.lovable.app/candidates</div>
+    </div>
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"></div>
+        <div class="nav-item inactive">🏠</div>
+        <div class="nav-item inactive">💼</div>
+        <div class="nav-item inactive">⬆️</div>
+        <div class="nav-item active">👥</div>
+        <div class="nav-item inactive">📊</div>
+        <div class="nav-item inactive">📅</div>
+        <div class="nav-item inactive bottom">⚙️</div>
+      </div>
+      <div class="main-area">
+        <div class="top-bar">
+          <div class="top-bar-title">Candidates</div>
+          <div class="user-pill"><div class="avatar">HR</div><div class="user-name">HR Manager</div></div>
+        </div>
+        <div class="content-area" style="position:relative">
+          <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center">
+            <div class="input-field" style="width:200px;display:flex;align-items:center;color:var(--slate);font-size:12px">🔍 Search...</div>
+            <select class="input-field" style="width:130px;font-size:12px"><option>All Jobs</option></select>
+            <select class="input-field" style="width:110px;font-size:12px"><option>All Status</option></select>
+            <select class="input-field" style="width:130px;font-size:12px"><option>ATS Score ↓</option></select>
+            <span style="margin-left:auto;font-size:12px;color:var(--slate)">Showing 3 candidates</span>
+          </div>
+          <div class="table-wrap" style="font-size:12px">
+            <div class="table-head" style="grid-template-columns:1.8fr 1.2fr 0.7fr 1fr 1fr 1fr 0.5fr">
+              <span>Candidate</span><span>Job Applied</span><span>ATS</span><span>JD Match</span><span>Recommendation</span><span>Decision</span><span></span>
+            </div>
+            <div class="table-row" style="grid-template-columns:1.8fr 1.2fr 0.7fr 1fr 1fr 1fr 0.5fr">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="avatar" style="background:#4F8EF7;width:32px;height:32px;font-size:11px">AR</div>
+                <div><div style="font-weight:600;color:var(--text)">Alex Rivera</div><div style="color:var(--slate);font-size:11px">alex@example.com</div></div>
+              </div>
+              <div><div style="color:#374151">PRD Manager</div><div style="color:var(--slate);font-size:11px">Product</div></div>
+              <div><div class="score-circle" style="background:#22C55E">82</div></div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:70%"></div></div><span style="color:#374151;font-size:11px">70%</span></div>
+              <div><span class="pill pill-blue">Yes</span></div>
+              <div><span class="pill pill-green">Shortlisted</span></div>
+              <div>👁️</div>
+            </div>
+            <div class="table-row" style="grid-template-columns:1.8fr 1.2fr 0.7fr 1fr 1fr 1fr 0.5fr">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="avatar" style="background:#F59E0B;width:32px;height:32px;font-size:11px">SC</div>
+                <div><div style="font-weight:600;color:var(--text)">Sarah Chen</div><div style="color:var(--slate);font-size:11px">sarah@example.com</div></div>
+              </div>
+              <div><div style="color:#374151">Senior SWE</div><div style="color:var(--slate);font-size:11px">Engineering</div></div>
+              <div><div class="score-circle" style="background:#F59E0B">71</div></div>
+              <div style="display:flex;align-items:center;gap:6px"><div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:65%"></div></div><span style="color:#374151;font-size:11px">65%</span></div>
+              <div><span class="pill pill-amber">Maybe</span></div>
+              <div><span class="pill pill-grey">Undecided</span></div>
+              <div>👁️</div>
+            </div>
+          </div>
+          <!-- DRAWER PREVIEW -->
+          <div class="drawer" style="font-size:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+              <div style="font-weight:700;color:var(--text)">Candidate Profile</div>
+              <div style="cursor:pointer;color:var(--slate)">✕</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+              <div class="avatar" style="width:48px;height:48px;font-size:16px;background:#4F8EF7">AR</div>
+              <div><div style="font-size:16px;font-weight:700;color:var(--text)">Alex Rivera</div><div style="color:var(--muted)">alex@example.com</div></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:14px">
+              <div style="flex:1;text-align:center;padding:8px;background:#F8FAFC;border-radius:8px;border:1px solid var(--border)">
+                <div class="score-circle" style="background:#22C55E;margin:0 auto 4px">82</div>
+                <div style="color:var(--muted)">ATS Score</div>
+              </div>
+              <div style="flex:1;text-align:center;padding:8px;background:#F8FAFC;border-radius:8px;border:1px solid var(--border)">
+                <div style="font-size:16px;font-weight:700;color:var(--blue)">70%</div>
+                <div style="color:var(--muted)">JD Match</div>
+              </div>
+            </div>
+            <div style="margin-bottom:10px">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px">SKILLS MATCHED</div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px">
+                <span class="pill pill-green" style="font-size:10px">TypeScript</span>
+                <span class="pill pill-green" style="font-size:10px">Node.js</span>
+                <span class="pill pill-green" style="font-size:10px">React</span>
+              </div>
+            </div>
+            <div style="margin-bottom:10px">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px">SKILLS MISSING</div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px">
+                <span class="pill pill-red" style="font-size:10px">Python</span>
+                <span class="pill pill-red" style="font-size:10px">AWS</span>
+              </div>
+            </div>
+            <div style="position:absolute;bottom:0;left:0;right:0;padding:12px;border-top:1px solid var(--border);background:white;display:flex;gap:6px;justify-content:flex-end">
+              <button style="background:#22C55E;color:white;border:none;border-radius:8px;padding:0 12px;height:34px;font-size:12px;cursor:pointer">Shortlist</button>
+              <button style="background:#F59E0B;color:white;border:none;border-radius:8px;padding:0 12px;height:34px;font-size:12px;cursor:pointer">Hold</button>
+              <button style="background:#EF4444;color:white;border:none;border-radius:8px;padding:0 12px;height:34px;font-size:12px;cursor:pointer">Reject</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 7: REPORTS ========== -->
+<div class="page-section">
+  <div class="page-label">
+    <div class="page-num">7</div>
+    <div class="page-title-text">Reports</div>
+    <div class="page-route">/reports</div>
+  </div>
+  <p class="page-desc">Per-job screening analytics. Summary stats row (avg ATS, avg JD match, total screened, recommendation breakdown). Expandable table rows reveal full AI evaluation details. CSV export available.</p>
+  <div class="wireframe">
+    <div class="browser-bar">
+      <div class="browser-dots"><div class="dot dot-red"></div><div class="dot dot-amber"></div><div class="dot dot-green"></div></div>
+      <div class="browser-url">aihirescreen.lovable.app/reports</div>
+    </div>
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"></div>
+        <div class="nav-item inactive">🏠</div>
+        <div class="nav-item inactive">💼</div>
+        <div class="nav-item inactive">⬆️</div>
+        <div class="nav-item inactive">👥</div>
+        <div class="nav-item active">📊</div>
+        <div class="nav-item inactive">📅</div>
+        <div class="nav-item inactive bottom">⚙️</div>
+      </div>
+      <div class="main-area">
+        <div class="top-bar">
+          <div class="top-bar-title">Reports</div>
+          <div class="user-pill"><div class="avatar">HR</div><div class="user-name">HR Manager</div></div>
+        </div>
+        <div class="content-area">
+          <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center">
+            <div style="font-size:12px;color:var(--muted)">Viewing reports for:</div>
+            <select class="input-field" style="width:180px;font-size:12px"><option>PRD Manager</option></select>
+            <select class="input-field" style="width:130px;font-size:12px"><option>ATS Score ↓</option></select>
+            <button class="btn-ghost" style="margin-left:auto;font-size:12px;height:36px">⬇️ Export CSV</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+            <div class="card" style="padding:14px 16px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--blue)">78</div><div style="font-size:11px;color:var(--muted)">Avg ATS Score</div></div>
+            <div class="card" style="padding:14px 16px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--blue)">68%</div><div style="font-size:11px;color:var(--muted)">Avg JD Match</div></div>
+            <div class="card" style="padding:14px 16px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--text)">3</div><div style="font-size:11px;color:var(--muted)">Total Screened</div></div>
+            <div class="card" style="padding:14px 16px;text-align:center"><div style="font-size:13px;font-weight:600;color:var(--text)">1 Yes · 1 Maybe · 1 No</div><div style="font-size:11px;color:var(--muted)">Recommendations</div></div>
+          </div>
+          <div class="table-wrap" style="font-size:12px">
+            <div class="table-head" style="grid-template-columns:1.5fr 0.7fr 0.8fr 0.8fr 1fr 1fr 1fr 0.5fr">
+              <span>Candidate</span><span>ATS</span><span>JD Match</span><span>Exp. Yrs</span><span>Education</span><span>Recommendation</span><span>Decision</span><span></span>
+            </div>
+            <div class="table-row" style="grid-template-columns:1.5fr 0.7fr 0.8fr 0.8fr 1fr 1fr 1fr 0.5fr">
+              <div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:28px;height:28px;font-size:10px;background:#4F8EF7">AR</div><div style="font-weight:600">Alex Rivera</div></div>
+              <div><div class="score-circle" style="background:#22C55E;width:28px;height:28px;font-size:10px">82</div></div>
+              <div style="display:flex;align-items:center;gap:4px"><div class="progress-bar" style="width:50px"><div class="progress-fill" style="width:70%"></div></div><span>70%</span></div>
+              <div style="color:#374151">6 yrs</div>
+              <div style="color:var(--muted)">BS CS</div>
+              <div><span class="pill pill-blue">Yes</span></div>
+              <div><span class="pill pill-green">Shortlisted</span></div>
+              <div style="color:var(--blue)">⌄</div>
+            </div>
+            <!-- Expanded sub-row -->
+            <div style="padding:14px 16px;background:#F8FAFC;border-left:4px solid var(--blue);border-bottom:1px solid var(--border);font-size:12px">
+              <div style="display:flex;gap:20px">
+                <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px">SKILLS MATCHED</div><div style="display:flex;flex-wrap:wrap;gap:4px"><span class="pill pill-green" style="font-size:10px">TypeScript</span><span class="pill pill-green" style="font-size:10px">Node.js</span><span class="pill pill-green" style="font-size:10px">React</span></div></div>
+                <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px">SKILLS MISSING</div><div style="display:flex;flex-wrap:wrap;gap:4px"><span class="pill pill-red" style="font-size:10px">Python</span><span class="pill pill-red" style="font-size:10px">AWS</span></div></div>
+              </div>
+              <div style="margin-top:10px;color:#374151;font-style:italic;font-size:12px">AI Summary: Strong full-stack background with 6 years experience. Missing Python and cloud skills but demonstrates strong core competencies.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 8: INTERVIEWS ========== -->
+<div class="page-section">
+  <div class="page-label">
+    <div class="page-num">8</div>
+    <div class="page-title-text">Interviews</div>
+    <div class="page-route">/interviews</div>
+  </div>
+  <p class="page-desc">List and Calendar view toggle. Shows all scheduled interviews with Google Meet join links. Schedule Interview modal with candidate dropdown (shortlisted only), date/time picker, duration select, multiple interviewer email tags.</p>
+  <div class="wireframe">
+    <div class="browser-bar">
+      <div class="browser-dots"><div class="dot dot-red"></div><div class="dot dot-amber"></div><div class="dot dot-green"></div></div>
+      <div class="browser-url">aihirescreen.lovable.app/interviews</div>
+    </div>
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"></div>
+        <div class="nav-item inactive">🏠</div>
+        <div class="nav-item inactive">💼</div>
+        <div class="nav-item inactive">⬆️</div>
+        <div class="nav-item inactive">👥</div>
+        <div class="nav-item inactive">📊</div>
+        <div class="nav-item active">📅</div>
+        <div class="nav-item inactive bottom">⚙️</div>
+      </div>
+      <div class="main-area">
+        <div class="top-bar">
+          <div class="top-bar-title">Interviews</div>
+          <div class="user-pill"><div class="avatar">HR</div><div class="user-name">HR Manager</div></div>
+        </div>
+        <div class="content-area">
+          <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center">
+            <div style="display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+              <div style="padding:0 14px;height:36px;background:var(--blue);color:white;display:flex;align-items:center;font-size:12px;font-weight:600">List View</div>
+              <div style="padding:0 14px;height:36px;background:white;color:var(--muted);display:flex;align-items:center;font-size:12px">Calendar View</div>
+            </div>
+            <select class="input-field" style="width:130px;font-size:12px"><option>All Statuses</option></select>
+            <button class="btn-primary" style="margin-left:auto;font-size:12px;height:36px">＋ Schedule Interview</button>
+          </div>
+          <div class="table-wrap" style="font-size:12px">
+            <div class="table-head" style="grid-template-columns:1.5fr 1fr 1.2fr 0.7fr 1fr 0.8fr 0.8fr 0.6fr">
+              <span>Candidate</span><span>Job Role</span><span>Date & Time</span><span>Duration</span><span>Google Meet</span><span>Interviewer</span><span>Status</span><span>Actions</span>
+            </div>
+            <div class="table-row" style="grid-template-columns:1.5fr 1fr 1.2fr 0.7fr 1fr 0.8fr 0.8fr 0.6fr">
+              <div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:28px;height:28px;font-size:10px;background:#4F8EF7">AR</div><div><div style="font-weight:600">Alex Rivera</div><div style="color:var(--slate);font-size:11px">alex@example.com</div></div></div>
+              <div style="color:#374151">PRD Manager</div>
+              <div style="color:#374151">Feb 25, 2026 · 10:00 AM</div>
+              <div style="color:var(--muted)">45 min</div>
+              <div><div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#F0FDF4;border:1px solid #22C55E;border-radius:999px;color:#16A34A;font-size:11px;font-weight:600">📹 Join Meet</div></div>
+              <div style="color:#374151">HR Manager</div>
+              <div><span class="pill pill-blue">Scheduled</span></div>
+              <div style="display:flex;gap:6px">✏️ 🗑️</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 9: SETTINGS ========== -->
+<div class="page-section">
+  <div class="page-label">
+    <div class="page-num">9</div>
+    <div class="page-title-text">Settings</div>
+    <div class="page-route">/settings</div>
+  </div>
+  <p class="page-desc">Profile management, password change, connected Google account, notification preferences, and danger zone. Single column 640px max-width. All updates save to Supabase hr_users table.</p>
+  <div class="wireframe">
+    <div class="browser-bar">
+      <div class="browser-dots"><div class="dot dot-red"></div><div class="dot dot-amber"></div><div class="dot dot-green"></div></div>
+      <div class="browser-url">aihirescreen.lovable.app/settings</div>
+    </div>
+    <div class="app-shell">
+      <div class="sidebar">
+        <div class="sidebar-logo"></div>
+        <div class="nav-item inactive">🏠</div>
+        <div class="nav-item inactive">💼</div>
+        <div class="nav-item inactive">⬆️</div>
+        <div class="nav-item inactive">👥</div>
+        <div class="nav-item inactive">📊</div>
+        <div class="nav-item inactive">📅</div>
+        <div class="nav-item active bottom">⚙️</div>
+      </div>
+      <div class="main-area">
+        <div class="top-bar">
+          <div class="top-bar-title">Settings</div>
+          <div class="user-pill"><div class="avatar">HR</div><div class="user-name">HR Manager</div></div>
+        </div>
+        <div class="content-area">
+          <div style="max-width:580px;display:flex;flex-direction:column;gap:14px">
+            <!-- Profile -->
+            <div class="card card-pad">
+              <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px">Profile</div>
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+                <div class="avatar" style="width:60px;height:60px;font-size:20px">HR</div>
+                <div><button style="color:var(--blue);background:none;border:none;font-size:13px;cursor:pointer">Change Photo</button><span style="color:var(--red);font-size:13px;margin-left:12px;cursor:pointer">Remove</span><div style="font-size:11px;color:var(--slate);margin-top:4px">JPG or PNG, max 2MB</div></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div><label class="form-label" style="font-size:12px">Full Name</label><div class="input-field" style="display:flex;align-items:center;font-size:13px">HR Manager</div></div>
+                <div><label class="form-label" style="font-size:12px">Email</label><div class="input-field" style="display:flex;align-items:center;font-size:13px;background:#F8FAFC;color:var(--muted)">hr@company.com</div></div>
+              </div>
+              <button class="btn-primary" style="height:36px;font-size:13px">Save Changes</button>
+            </div>
+            <!-- Password -->
+            <div class="card card-pad">
+              <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px">Change Password</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div><label class="form-label" style="font-size:12px">New Password</label><div class="input-field" style="display:flex;align-items:center;font-size:13px;color:var(--slate)">••••••••</div></div>
+                <div><label class="form-label" style="font-size:12px">Confirm Password</label><div class="input-field" style="display:flex;align-items:center;font-size:13px;color:var(--slate)">••••••••</div></div>
+              </div>
+              <button class="btn-primary" style="height:36px;font-size:13px">Update Password</button>
+            </div>
+            <!-- Notifications -->
+            <div class="card card-pad">
+              <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px">Notifications</div>
+              <div style="display:flex;flex-direction:column;gap:0">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;color:#374151">Email me when screening is complete</span><div style="width:40px;height:22px;background:var(--blue);border-radius:999px;position:relative"><div style="width:18px;height:18px;background:white;border-radius:50%;position:absolute;right:2px;top:2px"></div></div></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;color:#374151">Email me when interview is scheduled</span><div style="width:40px;height:22px;background:var(--blue);border-radius:999px;position:relative"><div style="width:18px;height:18px;background:white;border-radius:50%;position:absolute;right:2px;top:2px"></div></div></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0"><span style="font-size:13px;color:#374151">Weekly summary digest</span><div style="width:40px;height:22px;background:#CBD5E1;border-radius:999px;position:relative"><div style="width:18px;height:18px;background:white;border-radius:50%;position:absolute;left:2px;top:2px"></div></div></div>
+              </div>
+            </div>
+            <!-- Danger Zone -->
+            <div class="card card-pad" style="border-color:#FCA5A5">
+              <div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:10px">Danger Zone</div>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div><div style="font-size:13px;font-weight:600;color:var(--text)">Delete Account</div><div style="font-size:12px;color:var(--muted)">Permanently delete your HR account and all data.</div></div>
+                <button style="border:1px solid var(--red);color:var(--red);background:white;border-radius:8px;padding:0 14px;height:36px;font-size:12px;cursor:pointer">Delete Account</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:40px;color:#475569;font-size:13px;border-top:1px solid rgba(255,255,255,0.06);margin-top:40px">
+  <div style="font-size:16px;font-weight:700;color:#F8FAFC;margin-bottom:8px">HireScreen AI — UX Wireframes</div>
+  <div>10 pages · React + Supabase + n8n + Gemini AI · Built with Lovable</div>
+  <div style="margin-top:8px;color:#64748B">Wireframes generated to match production frontend implementation</div>
+</div>
+
+</body>
+</html>

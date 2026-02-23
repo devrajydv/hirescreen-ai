@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireScreen AI — Metrics & Roadmap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #1A2540;
+    --blue: #4F8EF7;
+    --green: #22C55E;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    --purple: #7C3AED;
+    --bg: #F8FAFC;
+    --border: #E2E8F0;
+    --text: #111827;
+    --muted: #6B7280;
+    --slate: #94A3B8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+    color: var(--text);
+    width: 1100px;
+    margin: 0 auto;
+    padding: 48px;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--navy);
+    margin-bottom: 32px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo-box {
+    width: 48px;
+    height: 48px;
+    background: var(--navy);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+  }
+
+  .brand-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .brand-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .doc-meta {
+    text-align: right;
+  }
+
+  .doc-type {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .doc-date {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* METRICS GRID */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  .metric-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  .metric-card.blue::before { background: var(--blue); }
+  .metric-card.green::before { background: var(--green); }
+  .metric-card.amber::before { background: var(--amber); }
+  .metric-card.purple::before { background: var(--purple); }
+  .metric-card.red::before { background: var(--red); }
+
+  .metric-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .metric-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .metric-target {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .metric-card.blue .metric-target { color: var(--blue); }
+  .metric-card.green .metric-target { color: var(--green); }
+  .metric-card.amber .metric-target { color: var(--amber); }
+  .metric-card.purple .metric-target { color: var(--purple); }
+  .metric-card.red .metric-target { color: var(--red); }
+
+  .metric-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .metric-baseline {
+    font-size: 10px;
+    color: var(--slate);
+    background: var(--bg);
+    border-radius: 4px;
+    padding: 4px 8px;
+    display: inline-block;
+  }
+
+  /* ROADMAP */
+  .roadmap-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  .phase-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .phase-header {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .phase-card:nth-child(1) .phase-header { background: #EFF6FF; }
+  .phase-card:nth-child(2) .phase-header { background: #F0FDF4; }
+  .phase-card:nth-child(3) .phase-header { background: #FFFBEB; }
+  .phase-card:nth-child(4) .phase-header { background: #F3F0FF; }
+
+  .phase-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .phase-card:nth-child(1) .phase-badge { background: var(--blue); color: white; }
+  .phase-card:nth-child(2) .phase-badge { background: var(--green); color: white; }
+  .phase-card:nth-child(3) .phase-badge { background: var(--amber); color: white; }
+  .phase-card:nth-child(4) .phase-badge { background: var(--purple); color: white; }
+
+  .phase-timeline {
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .phase-card:nth-child(1) .phase-timeline { color: var(--blue); }
+  .phase-card:nth-child(2) .phase-timeline { color: var(--green); }
+  .phase-card:nth-child(3) .phase-timeline { color: var(--amber); }
+  .phase-card:nth-child(4) .phase-timeline { color: var(--purple); }
+
+  .phase-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .phase-body {
+    padding: 14px 16px;
+  }
+
+  .phase-focus {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #374151;
+    line-height: 1.4;
+  }
+
+  .feature-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .phase-card:nth-child(1) .feature-dot { background: var(--blue); }
+  .phase-card:nth-child(2) .feature-dot { background: var(--green); }
+  .phase-card:nth-child(3) .feature-dot { background: var(--amber); }
+  .phase-card:nth-child(4) .feature-dot { background: var(--purple); }
+
+  .phase-outcome {
+    margin-top: 12px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .phase-card:nth-child(1) .phase-outcome { background: #EFF6FF; color: #1D4ED8; }
+  .phase-card:nth-child(2) .phase-outcome { background: #F0FDF4; color: #15803D; }
+  .phase-card:nth-child(3) .phase-outcome { background: #FFFBEB; color: #92400E; }
+  .phase-card:nth-child(4) .phase-outcome { background: #F3F0FF; color: #5B21B6; }
+
+  /* CURRENT STATUS BAR */
+  .status-bar {
+    background: var(--navy);
+    border-radius: 12px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .status-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .status-items {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .status-dot.live { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .status-dot.built { background: var(--blue); }
+  .status-dot.pending { background: var(--amber); }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-left {
+    font-size: 11px;
+    color: var(--slate);
+  }
+
+  .footer-stack {
+    display: flex;
+    gap: 8px;
+  }
+
+  .stack-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-box">🎯</div>
+    <div>
+      <div class="brand-name">HireScreen AI</div>
+      <div class="brand-sub">AI-Powered HR Resume Screening Platform</div>
+    </div>
+  </div>
+  <div class="doc-meta">
+    <div class="doc-type">Metrics & Product Roadmap</div>
+    <div class="doc-date">February 2026 · Version 1.0</div>
+  </div>
+</div>
+
+<!-- CURRENT BUILD STATUS -->
+<div class="section-title">Current Build Status</div>
+<div class="status-bar">
+  <div class="status-label">Live Now</div>
+  <div class="status-items">
+    <div class="status-item"><div class="status-dot live"></div>AI Resume Screening (Gemini)</div>
+    <div class="status-item"><div class="status-dot live"></div>ATS Scoring & JD Matching</div>
+    <div class="status-item"><div class="status-dot live"></div>Supabase Auth & Database</div>
+    <div class="status-item"><div class="status-dot live"></div>Google Calendar Integration</div>
+    <div class="status-item"><div class="status-dot live"></div>Automated Meet Link Generation</div>
+    <div class="status-item"><div class="status-dot live"></div>10-Page React Frontend</div>
+    <div class="status-item"><div class="status-dot live"></div>n8n Workflow Automation</div>
+  </div>
+</div>
+
+<!-- KEY SUCCESS METRICS -->
+<div class="section-title">5 Key Success Metrics</div>
+<div class="metrics-grid">
+
+  <div class="metric-card blue">
+    <div class="metric-icon">⚡</div>
+    <div class="metric-name">Time-to-Screen Per Resume</div>
+    <div class="metric-target">&lt; 90s</div>
+    <div class="metric-desc">End-to-end time from resume upload to AI evaluation report being available on the dashboard.</div>
+    <div class="metric-baseline">Baseline: 45–60 min manual review</div>
+  </div>
+
+  <div class="metric-card green">
+    <div class="metric-icon">🎯</div>
+    <div class="metric-name">AI Recommendation Accuracy</div>
+    <div class="metric-target">≥ 85%</div>
+    <div class="metric-desc">Percentage of AI shortlist recommendations that HR validates as correct after manual review.</div>
+    <div class="metric-baseline">Target validated against HR decisions</div>
+  </div>
+
+  <div class="metric-card amber">
+    <div class="metric-icon">📉</div>
+    <div class="metric-name">Screening Cost Per Candidate</div>
+    <div class="metric-target">≤ ₹2</div>
+    <div class="metric-desc">Total API cost (Gemini tokens + infra) per candidate screened end-to-end through the pipeline.</div>
+    <div class="metric-baseline">Gemini free tier: ~₹0 during MVP</div>
+  </div>
+
+  <div class="metric-card purple">
+    <div class="metric-icon">📊</div>
+    <div class="metric-name">Pipeline Completion Rate</div>
+    <div class="metric-target">≥ 95%</div>
+    <div class="metric-desc">Percentage of uploaded resumes that complete the full screening pipeline without errors or manual retries.</div>
+    <div class="metric-baseline">Tracks n8n workflow success rate</div>
+  </div>
+
+  <div class="metric-card red">
+    <div class="metric-icon">📅</div>
+    <div class="metric-name">Interview Scheduling Time</div>
+    <div class="metric-target">&lt; 2 min</div>
+    <div class="metric-desc">Time from HR clicking Schedule Interview to candidate and interviewer receiving Google Calendar invite with Meet link.</div>
+    <div class="metric-baseline">Baseline: 20–30 min manual scheduling</div>
+  </div>
+
+</div>
+
+<!-- PRODUCT ROADMAP -->
+<div class="section-title">Product Roadmap</div>
+<div class="roadmap-grid">
+
+  <!-- PHASE 1 -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-badge">Phase 1</div>
+      <div class="phase-timeline">Now — Mar 2026</div>
+      <div class="phase-name">MVP</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-focus">Core Platform</div>
+      <div class="feature-item"><div class="feature-dot"></div>AI resume screening with Gemini</div>
+      <div class="feature-item"><div class="feature-dot"></div>ATS score + JD match analysis</div>
+      <div class="feature-item"><div class="feature-dot"></div>Candidate profile management</div>
+      <div class="feature-item"><div class="feature-dot"></div>Google Calendar interview scheduling</div>
+      <div class="feature-item"><div class="feature-dot"></div>PDF resume support</div>
+      <div class="feature-item"><div class="feature-dot"></div>Supabase auth + real-time updates</div>
+      <div class="phase-outcome">✅ Delivered — Platform live and fully functional for PDF-based HR workflows</div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-badge">Phase 2</div>
+      <div class="phase-timeline">Apr — Jun 2026</div>
+      <div class="phase-name">Growth</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-focus">Reliability & Reach</div>
+      <div class="feature-item"><div class="feature-dot"></div>DOCX and TXT resume support</div>
+      <div class="feature-item"><div class="feature-dot"></div>Email notifications on screening complete</div>
+      <div class="feature-item"><div class="feature-dot"></div>Candidate rejection email automation</div>
+      <div class="feature-item"><div class="feature-dot"></div>Bulk resume upload improvements</div>
+      <div class="feature-item"><div class="feature-dot"></div>Platform logo and branding polish</div>
+      <div class="feature-item"><div class="feature-dot"></div>n8n error handling and retry logic</div>
+      <div class="phase-outcome">🎯 Goal — Zero manual fallbacks, support 3 file formats, automated candidate comms</div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-badge">Phase 3</div>
+      <div class="phase-timeline">Jul — Sep 2026</div>
+      <div class="phase-name">Intelligence</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-focus">AI Enhancements</div>
+      <div class="feature-item"><div class="feature-dot"></div>Custom scoring rubric per job role</div>
+      <div class="feature-item"><div class="feature-dot"></div>Multi-model AI comparison (GPT vs Gemini)</div>
+      <div class="feature-item"><div class="feature-dot"></div>Bias detection in screening output</div>
+      <div class="feature-item"><div class="feature-dot"></div>AI-generated interview question sets</div>
+      <div class="feature-item"><div class="feature-dot"></div>Candidate ranking within job pool</div>
+      <div class="feature-item"><div class="feature-dot"></div>Historical hiring pattern analytics</div>
+      <div class="phase-outcome">🎯 Goal — Smarter, fairer screening with HR-configurable AI parameters per role</div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-badge">Phase 4</div>
+      <div class="phase-timeline">Oct — Dec 2026</div>
+      <div class="phase-name">Scale</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-focus">Enterprise & Integrations</div>
+      <div class="feature-item"><div class="feature-dot"></div>ATS integrations (Workday, Greenhouse)</div>
+      <div class="feature-item"><div class="feature-dot"></div>Multi-tenant team workspaces</div>
+      <div class="feature-item"><div class="feature-dot"></div>LinkedIn job posting sync</div>
+      <div class="feature-item"><div class="feature-dot"></div>Role-based access control (RBAC)</div>
+      <div class="feature-item"><div class="feature-dot"></div>API access for enterprise HR systems</div>
+      <div class="feature-item"><div class="feature-dot"></div>SOC 2 compliance readiness</div>
+      <div class="phase-outcome">🎯 Goal — Enterprise-ready platform capable of handling 1000+ candidates per month per team</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-left">HireScreen AI · Metrics & Roadmap · Confidential · February 2026</div>
+  <div class="footer-stack">
+    <div class="stack-tag">React + Lovable</div>
+    <div class="stack-tag">Supabase</div>
+    <div class="stack-tag">n8n</div>
+    <div class="stack-tag">Gemini AI</div>
+    <div class="stack-tag">Google Calendar API</div>
+    <div class="stack-tag">Cloudflare Tunnel</div>
+  </div>
+</div>
+
+</body>
+</html>

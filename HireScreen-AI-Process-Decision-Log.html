@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireScreen AI — Process & Decision Log</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #1A2540;
+    --blue: #4F8EF7;
+    --green: #22C55E;
+    --amber: #F59E0B;
+    --red: #EF4444;
+    --purple: #7C3AED;
+    --bg: #F8FAFC;
+    --border: #E2E8F0;
+    --text: #111827;
+    --muted: #6B7280;
+    --slate: #94A3B8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+    color: var(--text);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 48px;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--navy);
+    margin-bottom: 36px;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 16px; }
+
+  .logo-box {
+    width: 48px; height: 48px;
+    background: var(--navy);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 22px;
+  }
+
+  .brand-name { font-size: 24px; font-weight: 700; color: var(--navy); }
+  .brand-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .doc-type { font-size: 13px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; }
+  .doc-date { font-size: 12px; color: var(--muted); margin-top: 4px; text-align: right; }
+
+  /* SECTION */
+  .section { margin-bottom: 40px; }
+
+  .section-title {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ENTRY CARD */
+  .entry {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .entry-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .entry-num {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: white;
+    flex-shrink: 0;
+  }
+
+  .entry-title { font-size: 14px; font-weight: 700; color: var(--text); flex: 1; }
+
+  .entry-tag {
+    font-size: 10px; font-weight: 600;
+    padding: 3px 10px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
+  .tag-decision { background: #EFF6FF; color: var(--blue); }
+  .tag-problem { background: #FEF2F2; color: var(--red); }
+  .tag-learning { background: #F0FDF4; color: #15803D; }
+  .tag-iteration { background: #FFFBEB; color: #92400E; }
+  .tag-tradeoff { background: #F3F0FF; color: var(--purple); }
+
+  .entry-body { padding: 16px 18px; }
+
+  .entry-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 8px 16px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+
+  .entry-row:last-child { margin-bottom: 0; }
+
+  .row-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding-top: 2px;
+  }
+
+  .row-value { color: #374151; }
+
+  .highlight-box {
+    background: #F0FDF4;
+    border-left: 3px solid var(--green);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #15803D;
+    margin-top: 10px;
+  }
+
+  .problem-box {
+    background: #FEF2F2;
+    border-left: 3px solid var(--red);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #991B1B;
+    margin-top: 10px;
+  }
+
+  .iteration-box {
+    background: #FFFBEB;
+    border-left: 3px solid var(--amber);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #92400E;
+    margin-top: 10px;
+  }
+
+  /* SUMMARY TABLE */
+  .summary-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .summary-table th {
+    text-align: left; padding: 10px 14px;
+    background: var(--navy); color: white;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .summary-table th:first-child { border-radius: 8px 0 0 0; }
+  .summary-table th:last-child { border-radius: 0 8px 0 0; }
+  .summary-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .summary-table tr:nth-child(even) td { background: var(--bg); }
+  .summary-table tr:last-child td { border-bottom: none; }
+
+  /* PROMPT ITERATION */
+  .prompt-block {
+    background: #0F172A;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #94A3B8;
+    margin: 8px 0;
+    line-height: 1.6;
+  }
+
+  .prompt-label {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .prompt-label.v1 { color: var(--red); }
+  .prompt-label.v2 { color: var(--amber); }
+  .prompt-label.v3 { color: var(--green); }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--slate);
+    margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-box">🎯</div>
+    <div>
+      <div class="brand-name">HireScreen AI</div>
+      <div class="brand-sub">AI-Powered HR Resume Screening Platform</div>
+    </div>
+  </div>
+  <div>
+    <div class="doc-type">Process & Decision Log</div>
+    <div class="doc-date">February 2026 · Version 1.0</div>
+  </div>
+</div>
+
+<!-- INTRO -->
+<div class="section">
+  <p style="font-size:14px;color:#374151;line-height:1.7;padding:16px 20px;background:#EFF6FF;border-radius:10px;border-left:4px solid var(--blue)">
+    This document captures the key decisions made, problems encountered, and lessons learned while building HireScreen AI — an end-to-end AI-powered HR resume screening platform. It covers architecture choices, prompt engineering iterations, backend debugging, and frontend integration decisions in plain language.
+  </p>
+</div>
+
+<!-- SECTION 1: ARCHITECTURE DECISIONS -->
+<div class="section">
+  <div class="section-title">1. Architecture & Tool Decisions</div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--blue)">1</div>
+      <div class="entry-title">Why n8n for automation instead of writing custom backend code</div>
+      <span class="entry-tag tag-decision">Decision</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">The Choice</div><div class="row-value">Used n8n (a visual workflow tool) as the backend automation engine instead of writing a Node.js or Python server from scratch.</div></div>
+      <div class="entry-row"><div class="row-label">Why</div><div class="row-value">n8n lets you connect services visually — each step (fetch from database, call AI, save result) is a separate node you can see and debug individually. Writing the same logic in code would take 10x longer and be much harder to debug when something breaks.</div></div>
+      <div class="entry-row"><div class="row-label">Trade-off</div><div class="row-value">n8n runs locally on Docker which means it can't be accessed from the internet directly. Required Cloudflare Tunnel to expose it publicly so the frontend could call it.</div></div>
+      <div class="highlight-box">✅ Result: Entire backend automation built visually with no custom server code. Any node that breaks shows the exact error immediately.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--purple)">2</div>
+      <div class="entry-title">Why Supabase native nodes instead of HTTP requests for database operations</div>
+      <span class="entry-tag tag-decision">Decision</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">The Choice</div><div class="row-value">Switched from HTTP Request nodes (which required hardcoding the Supabase service role key in the node) to Supabase native nodes (which store the key in encrypted credentials).</div></div>
+      <div class="entry-row"><div class="row-label">Why</div><div class="row-value">When you export a workflow as JSON to share with someone, HTTP nodes include everything — including secret keys. Native Supabase nodes only store the credential name in the export, not the actual key value.</div></div>
+      <div class="entry-row"><div class="row-label">Impact</div><div class="row-value">The workflow JSON can now be safely shared publicly for project evaluation without exposing any secret credentials.</div></div>
+      <div class="highlight-box">✅ Result: Zero secrets in exported JSON. All 4 credentials (Supabase, Gemini, Google Calendar, Storage) stored in n8n's AES-256 encrypted credential system.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--green)">3</div>
+      <div class="entry-title">Why Lovable for frontend instead of building from scratch</div>
+      <span class="entry-tag tag-decision">Decision</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">The Choice</div><div class="row-value">Used Lovable (an AI frontend builder) to generate all 10 React pages instead of coding them manually in VS Code.</div></div>
+      <div class="entry-row"><div class="row-label">Why</div><div class="row-value">The backend pipeline (AI screening, database, automation) was the core technical challenge. Lovable let the frontend be built 10x faster using detailed technical prompts, freeing time to focus on making the AI pipeline work correctly.</div></div>
+      <div class="entry-row"><div class="row-label">Trade-off</div><div class="row-value">Lovable has a daily credit limit (5 free, 20 on starter plan). Some minor frontend fixes had to be done manually by editing the code directly in Lovable's code editor without spending credits.</div></div>
+      <div class="highlight-box">✅ Result: All 10 pages built in 2 days. Manual code edits done for webhook URLs, delete confirmation text, and interview payload fields.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--amber)">4</div>
+      <div class="entry-title">Why a two-step AI approach (Preprocess + Evaluate) instead of one AI call</div>
+      <span class="entry-tag tag-decision">Decision</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">The Problem</div><div class="row-value">A full job description and resume together can be 4000+ tokens. Gemini's free tier output was getting cut off mid-response at 1500 tokens, producing broken JSON that couldn't be parsed.</div></div>
+      <div class="entry-row"><div class="row-label">The Solution</div><div class="row-value">Split the AI work into two steps: Step 1 (Preprocess) reads the raw JD and resume and condenses both into a short plain-text summary. Step 2 (Evaluate) reads only the condensed summary and produces the final scoring JSON.</div></div>
+      <div class="entry-row"><div class="row-label">Result</div><div class="row-value">The evaluator now receives ~500 tokens of clean input instead of 4000+ tokens of raw text. Output JSON is always complete and parseable within the token limit.</div></div>
+      <div class="highlight-box">✅ Result: Reliable end-to-end AI evaluation. ATS scores, JD match %, skills, recommendation all populated correctly every time.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SECTION 2: PROBLEMS & HOW THEY WERE SOLVED -->
+<div class="section">
+  <div class="section-title">2. Problems Encountered & How They Were Solved</div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--red)">5</div>
+      <div class="entry-title">Resume file download from Supabase private storage was failing</div>
+      <span class="entry-tag tag-problem">Problem</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">What Happened</div><div class="row-value">n8n was trying to download resume files directly from Supabase Storage using a URL with the API key in the Authorization header. It kept returning "Bucket not found" errors even with valid credentials.</div></div>
+      <div class="entry-row"><div class="row-label">Root Cause</div><div class="row-value">Private Supabase Storage buckets don't allow direct downloads using an API key in the header. You must first generate a temporary signed URL, then use that URL to download the file.</div></div>
+      <div class="entry-row"><div class="row-label">Fix Applied</div><div class="row-value">Split the download into two nodes: Node 6a generates a 60-second signed URL by calling Supabase's storage sign API. Node 6b downloads the file using that signed URL with no auth header needed.</div></div>
+      <div class="highlight-box">✅ Lesson: Supabase private bucket downloads always require signed URLs. Direct API key authentication doesn't work for file downloads.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--red)">6</div>
+      <div class="entry-title">AI output was wrapped in code fences breaking JSON parsing</div>
+      <span class="entry-tag tag-problem">Problem</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">What Happened</div><div class="row-value">Even though the Gemini AI was told to return only valid JSON, it kept wrapping the response in markdown code fences like ```json ... ```. The JSON.parse() function couldn't handle these extra characters and crashed.</div></div>
+      <div class="entry-row"><div class="row-label">Attempts Made</div><div class="row-value">Three different approaches tried: regex replace, line-by-line filter, and extracting between curly braces. The final working solution was finding the first { and last } in the string and extracting everything between them, completely ignoring whatever wrapping the AI added.</div></div>
+      <div class="entry-row"><div class="row-label">Fix Applied</div><div class="row-value">Used JavaScript's indexOf('{') and lastIndexOf('}') to extract just the JSON object regardless of what surrounds it. Added try/catch fallback that returns default values if parsing still fails.</div></div>
+      <div class="highlight-box">✅ Lesson: Never trust AI to follow formatting instructions perfectly. Always write parsing code that is defensive and handles unexpected wrapping.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--red)">7</div>
+      <div class="entry-title">Frontend could not connect to n8n running on localhost</div>
+      <span class="entry-tag tag-problem">Problem</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">What Happened</div><div class="row-value">The Lovable frontend is hosted at a public URL (aihirescreen.lovable.app). When it tried to call n8n at http://localhost:5678, the browser blocked it with a CORS (Cross-Origin Resource Sharing) error. Browsers do not allow public websites to call localhost addresses.</div></div>
+      <div class="entry-row"><div class="row-label">Fix Applied</div><div class="row-value">Set up Cloudflare Tunnel — a free tool that creates a public HTTPS URL that routes traffic to your localhost n8n. Updated n8n's Docker startup command with WEBHOOK_URL and N8N_EDITOR_BASE_URL environment variables so n8n generates webhook URLs using the public tunnel address instead of localhost.</div></div>
+      <div class="entry-row"><div class="row-label">Additional Step</div><div class="row-value">Updated Supabase Auth Site URL from the default http://localhost:3000 to the live Lovable app URL so Google OAuth redirects worked correctly after login.</div></div>
+      <div class="highlight-box">✅ Lesson: Any AI tool or automation running locally needs a tunnel (ngrok, Cloudflare, etc.) to be reachable from a cloud-hosted frontend.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--red)">8</div>
+      <div class="entry-title">New user signup was failing with "Database error saving new user"</div>
+      <span class="entry-tag tag-problem">Problem</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">What Happened</div><div class="row-value">When a new user tried to sign up, Supabase Auth created the user account but then the database trigger (which creates a matching row in the hr_users table) was crashing and blocking the whole signup.</div></div>
+      <div class="entry-row"><div class="row-label">Root Cause</div><div class="row-value">The trigger function didn't have error handling. If anything went wrong inserting into hr_users (like a null value in a required field), the entire signup transaction was rolled back — meaning the user couldn't sign up at all.</div></div>
+      <div class="entry-row"><div class="row-label">Fix Applied</div><div class="row-value">Rebuilt the trigger function with a full EXCEPTION block. Even if the hr_users insert fails for any reason, the trigger now silently continues and returns the new user — so signup always succeeds. The hr_users row can be created later.</div></div>
+      <div class="highlight-box">✅ Lesson: Database triggers that run on user signup must have exception handling. A crash in a trigger should never block the user from creating their account.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--red)">9</div>
+      <div class="entry-title">Loop node was feeding job description data into candidate nodes instead of candidate IDs</div>
+      <span class="entry-tag tag-problem">Problem</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">What Happened</div><div class="row-value">The Loop Over Items node was supposed to iterate over the list of candidate IDs from the webhook. Instead it was iterating over the job description data because it was directly connected after the Fetch JD node with no preparation step in between.</div></div>
+      <div class="entry-row"><div class="row-label">Fix Applied</div><div class="row-value">Added a "Prepare Candidates" Code node between Fetch JD and the Loop. This code node reads the candidate_ids array directly from the original Webhook data and maps each ID into a separate item. The Loop now correctly iterates over candidate IDs, one at a time.</div></div>
+      <div class="entry-row"><div class="row-label">Key Learning</div><div class="row-value">In n8n, each node by default passes its own output to the next node. If you need data from an earlier node (like the webhook), you must explicitly reference it using $('Webhook').first().json rather than relying on the flow.</div></div>
+      <div class="highlight-box">✅ Lesson: n8n nodes don't automatically carry forward all previous data. Always explicitly reference the node you want data from using its name.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SECTION 3: PROMPT ITERATIONS -->
+<div class="section">
+  <div class="section-title">3. AI Prompt Iterations</div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--amber)">10</div>
+      <div class="entry-title">Preprocess Documents prompt — 3 versions before it worked reliably</div>
+      <span class="entry-tag tag-iteration">Iteration</span>
+    </div>
+    <div class="entry-body">
+
+      <div class="prompt-label v1">Version 1 — Failed (JSON output, too verbose, got truncated)</div>
+      <div class="prompt-block">Extract key info from JD and resume. Return JSON with required_skills, preferred_skills, min_experience_years, education_requirement, candidate_skills, candidate_experience_years, candidate_education, candidate_achievements.</div>
+
+      <div class="entry-row" style="margin-top:10px"><div class="row-label">Problem</div><div class="row-value">JSON structure used too many tokens. Response was getting cut off mid-array at the 1000 token limit. Downstream parsing was receiving incomplete data.</div></div>
+
+      <div class="prompt-label v2" style="margin-top:12px">Version 2 — Partially worked (Smaller JSON, still sometimes truncated)</div>
+      <div class="prompt-block">Extract only essential screening information. Return compact JSON only: { "required_skills": [], "candidate_skills": [], "min_experience_years": 0, "candidate_experience_years": 0 }</div>
+
+      <div class="entry-row" style="margin-top:10px"><div class="row-label">Problem</div><div class="row-value">Better but JSON structure overhead still caused occasional truncation with long JDs. Also Gemini still sometimes added code fences around the JSON despite being told not to.</div></div>
+
+      <div class="prompt-label v3" style="margin-top:12px">Version 3 — Final working version (Plain text, compact, always complete)</div>
+      <div class="prompt-block">Extract only essential screening information. Be extremely concise. Respond in this exact format with no extra text:
+
+REQUIRED_SKILLS: TypeScript, Node.js, Python
+PREFERRED_SKILLS: AWS, Docker
+MIN_EXPERIENCE: 5
+EDUCATION_REQ: Bachelor's Computer Science
+CANDIDATE_SKILLS: TypeScript, Node.js, React
+CANDIDATE_EXPERIENCE: 6
+CANDIDATE_EDUCATION: BS CS UC Berkeley
+ACHIEVEMENTS: Built analytics dashboard, Led team of 5</div>
+
+      <div class="highlight-box" style="margin-top:10px">✅ Result: Plain text uses 60% fewer tokens than JSON. Response always fits within 500 tokens. No code fence issue since there's no JSON to wrap. The evaluator receives clean, complete data every time.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--amber)">11</div>
+      <div class="entry-title">AI Evaluator prompt — constraining output length to prevent truncation</div>
+      <span class="entry-tag tag-iteration">Iteration</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">Original Problem</div><div class="row-value">The evaluator was asked to write detailed paragraphs for strengths, weaknesses, and summary. These were being cut off mid-sentence at the token limit, breaking JSON parsing.</div></div>
+      <div class="entry-row"><div class="row-label">Change Made</div><div class="row-value">Added explicit length constraints directly in the prompt — "strengths: one sentence", "weaknesses: one sentence", "summary: two sentences maximum". This reduced evaluator output from ~800 tokens to ~400 tokens while keeping all the key information.</div></div>
+      <div class="entry-row"><div class="row-label">System Message Change</div><div class="row-value">Added "You are an expert HR screening assistant" as the system message to anchor Gemini's role and reduce the chance of it adding conversational text before or after the JSON.</div></div>
+      <div class="highlight-box">✅ Lesson: When working with free-tier AI APIs that have output limits, explicitly constrain the length of every free-text field in your prompt. Never leave length open-ended.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SECTION 4: DESIGN CHOICES -->
+<div class="section">
+  <div class="section-title">4. Key Design Choices</div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--navy)">12</div>
+      <div class="entry-title">Processing one resume at a time instead of all simultaneously</div>
+      <span class="entry-tag tag-tradeoff">Trade-off</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">The Choice</div><div class="row-value">The Loop node was set to Batch Size 1 — meaning it processes one resume, completes it fully, then moves to the next. It does not process multiple resumes at the same time.</div></div>
+      <div class="entry-row"><div class="row-label">Why Not Parallel</div><div class="row-value">Processing multiple resumes simultaneously would call the Gemini API multiple times at once, triggering "too many requests" rate limit errors on the free tier. It would also create race conditions when writing results to the database.</div></div>
+      <div class="entry-row"><div class="row-label">Trade-off</div><div class="row-value">Slower total time for large batches (10 resumes = ~15 minutes) but 100% reliable with no errors. In a production paid tier, batch size could be increased to 3-5 for faster processing.</div></div>
+      <div class="highlight-box">✅ Decision: Reliability over speed for MVP. Every resume gets fully processed and saved before moving to the next one.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--navy)">13</div>
+      <div class="entry-title">Candidate data is never hard-deleted from the database</div>
+      <span class="entry-tag tag-decision">Decision</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">The Choice</div><div class="row-value">When HR rejects a candidate or deletes a job posting, candidate records and screening reports are either cascade-deleted together or remain as historical data. No partial orphaned records are left.</div></div>
+      <div class="entry-row"><div class="row-label">Why</div><div class="row-value">HR teams need audit trails. A candidate rejected today might be reconsidered for a different role tomorrow. Accidental deletion of screening data would lose AI-generated insights that took compute resources to generate.</div></div>
+      <div class="entry-row"><div class="row-label">Implementation</div><div class="row-value">Used PostgreSQL CASCADE DELETE rules so when a job posting is deleted, all its candidates and their reports are deleted together cleanly. Shortlist decisions use a separate table so rejecting a candidate only adds a "rejected" decision row — the candidate profile stays intact.</div></div>
+      <div class="highlight-box">✅ Decision: Decisions (shortlist/reject/hold) are separate from data. Rejecting someone changes their status, it does not delete their profile.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--navy)">14</div>
+      <div class="entry-title">Extracting candidate name, email and phone from resume in n8n rather than asking HR to type them</div>
+      <span class="entry-tag tag-decision">Decision</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">The Problem</div><div class="row-value">When a resume is uploaded, the frontend only knows the filename — not who it belongs to. The candidate row in the database was being created with the filename as the full name (e.g. "alex_rivera_resume.pdf" instead of "Alex Rivera").</div></div>
+      <div class="entry-row"><div class="row-label">The Choice</div><div class="row-value">After extracting the PDF text, added a Code node that uses simple logic to find the candidate's name (first clean line of the resume), email (regex pattern matching), and phone number (regex pattern matching) and automatically updates the candidate record in the database.</div></div>
+      <div class="entry-row"><div class="row-label">Why Not Ask HR</div><div class="row-value">Requiring HR to manually enter name and email for each candidate before uploading defeats the purpose of automation. The whole point is zero manual data entry.</div></div>
+      <div class="highlight-box">✅ Result: Candidates appear on the dashboard with their real name, email and phone number automatically — no manual data entry by HR required.</div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-num" style="background:var(--navy)">15</div>
+      <div class="entry-title">Using signed URLs for resume storage instead of making the bucket public</div>
+      <span class="entry-tag tag-decision">Decision</span>
+    </div>
+    <div class="entry-body">
+      <div class="entry-row"><div class="row-label">The Simpler Option</div><div class="row-value">Making the Supabase Storage bucket public would allow anyone with the URL to download any resume. This would have been a one-click setup.</div></div>
+      <div class="entry-row"><div class="row-label">The Chosen Option</div><div class="row-value">Kept the bucket private. n8n generates a temporary signed URL valid for only 60 seconds when it needs to download a resume. After 60 seconds the URL expires and cannot be used again.</div></div>
+      <div class="entry-row"><div class="row-label">Why This Matters</div><div class="row-value">Resumes contain personal information — name, phone number, home address, employment history. GDPR and data privacy best practices require that personal documents are never publicly accessible. A signed URL approach ensures only the n8n automation can access them, and only when actively processing.</div></div>
+      <div class="highlight-box">✅ Decision: Privacy by design. Candidate resumes are never publicly accessible. Every access is authenticated and time-limited.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SECTION 5: SUMMARY TABLE -->
+<div class="section">
+  <div class="section-title">5. Decision Summary at a Glance</div>
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th style="width:30%">Decision</th>
+        <th style="width:25%">What Was Chosen</th>
+        <th style="width:25%">What Was Rejected</th>
+        <th style="width:20%">Key Reason</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Backend automation tool</td>
+        <td>n8n visual workflow</td>
+        <td>Custom Node.js server</td>
+        <td>Faster to build, easier to debug</td>
+      </tr>
+      <tr>
+        <td>Database credentials in n8n</td>
+        <td>Encrypted native nodes</td>
+        <td>Hardcoded keys in HTTP headers</td>
+        <td>Safe to share workflow JSON</td>
+      </tr>
+      <tr>
+        <td>AI pipeline approach</td>
+        <td>Two-step preprocess + evaluate</td>
+        <td>Single AI call with full documents</td>
+        <td>Prevents token limit truncation</td>
+      </tr>
+      <tr>
+        <td>AI output format</td>
+        <td>Plain text key:value pairs</td>
+        <td>Structured JSON output</td>
+        <td>50% fewer tokens, no code fence issue</td>
+      </tr>
+      <tr>
+        <td>Resume storage access</td>
+        <td>Signed URLs (60s expiry)</td>
+        <td>Public bucket or permanent URL</td>
+        <td>Candidate data privacy</td>
+      </tr>
+      <tr>
+        <td>Loop batch size</td>
+        <td>1 resume at a time</td>
+        <td>Parallel processing</td>
+        <td>Avoids API rate limits and DB conflicts</td>
+      </tr>
+      <tr>
+        <td>Candidate rejection</td>
+        <td>Decision row in separate table</td>
+        <td>Delete candidate record</td>
+        <td>Preserves audit trail</td>
+      </tr>
+      <tr>
+        <td>Frontend builder</td>
+        <td>Lovable (AI-generated React)</td>
+        <td>Manual React coding</td>
+        <td>10 pages built in 2 days</td>
+      </tr>
+      <tr>
+        <td>Local-to-public connection</td>
+        <td>Cloudflare Tunnel</td>
+        <td>Deploy n8n to cloud server</td>
+        <td>Free, instant, no server management</td>
+      </tr>
+      <tr>
+        <td>Candidate name extraction</td>
+        <td>Auto-extracted from resume text</td>
+        <td>Manual HR entry on upload</td>
+        <td>Zero manual data entry</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div>HireScreen AI · Process & Decision Log · February 2026</div>
+  <div>15 entries · Architecture · Problems · Prompt Iterations · Design Choices</div>
+</div>
+
+</body>
+</html>
