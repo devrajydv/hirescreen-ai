@@ -1,0 +1,219 @@
+{
+  "name": "Interview Scheduling",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "schedule-interview",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -688,
+        -48
+      ],
+      "id": "917eb49e-becd-4cac-85b2-3d1669ce42d9",
+      "name": "Webhook",
+      "webhookId": "7eb70687-aaff-460f-a351-228482dc94a0"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "mode": "list",
+          "value": "devrajydv48@gmail.com"
+        },
+        "start": "={{ new Date($('Prepare Attendees').first().json.interview_date).toISOString() }}",
+        "end": "={{ new Date(new Date($('Prepare Attendees').first().json.interview_date).getTime() + $('Prepare Attendees').first().json.duration_minutes * 60000).toISOString() }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $('Prepare Attendees').first().json.candidate_email }}",
+            "={{ $('Prepare Attendees').first().json.interviewer_1 }}"
+          ],
+          "conferenceDataUi": {
+            "conferenceDataValues": {
+              "conferenceSolution": "hangoutsMeet"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -304,
+        -48
+      ],
+      "id": "6c49c44e-1128-478a-a559-bfb7d18fd4d2",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "LsCYlnMfA08mZpXA",
+          "name": "Google Calendar HR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const eventData = $input.first().json;\n\nconst meetLink = eventData.hangoutLink \n  || eventData.conferenceData?.entryPoints?.[0]?.uri \n  || null;\n\nconst googleEventId = eventData.id || null;\n\nreturn [{\n  json: {\n    google_event_id: googleEventId,\n    google_meet_link: meetLink,\n    candidate_id: $('Webhook').first().json.body.candidate_id,\n    job_id: $('Webhook').first().json.body.job_id,\n    interview_date: $('Webhook').first().json.body.interview_date,\n    duration_minutes: $('Webhook').first().json.body.duration_minutes,\n    hr_email: $('Webhook').first().json.body.hr_email,\n    notes: $('Webhook').first().json.body.notes || ''\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        -48
+      ],
+      "id": "2e4db4fc-04ab-47e3-8c35-d075df3641fa",
+      "name": "Extract Meet Link"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\",\n  \"meet_link\": \"{{ $('Extract Meet Link').first().json.google_meet_link }}\",\n  \"event_id\": \"{{ $('Extract Meet Link').first().json.google_event_id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        256,
+        -48
+      ],
+      "id": "4d41d992-ba9e-4cee-ab21-2c4c1d5eeae4",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $('Webhook').first().json.body;\n\nconst interviewers = body.interviewer_emails || [];\n\nreturn [{\n  json: {\n    candidate_name: body.candidate_name,\n    candidate_email: body.candidate_email,\n    interview_date: body.interview_date,\n    duration_minutes: body.duration_minutes,\n    job_title: body.job_title,\n    notes: body.notes || '',\n    interview_id: body.interview_id,\n    interviewer_1: interviewers[0] || null,\n    interviewer_2: interviewers[1] || null,\n    interviewer_3: interviewers[2] || null,\n    interviewer_4: interviewers[3] || null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        -48
+      ],
+      "id": "8afd2533-79a7-417d-9774-ff26ced57731",
+      "name": "Prepare Attendees"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "interview_schedules",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').first().json.body.interview_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "google_event_id",
+              "fieldValue": "={{ $json.google_event_id }}"
+            },
+            {
+              "fieldId": "google_meet_link",
+              "fieldValue": "={{ $json.google_meet_link }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "scheduled"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $json.notes }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -48
+      ],
+      "id": "5c73bce1-da5b-4fc8-b3db-f2716c4aff60",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "43LfIbahXpYtmqUH",
+          "name": "Supabase HR"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Attendees",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Extract Meet Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Meet Link": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Attendees": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7416f4ec-38be-400f-858a-647d5f30cf63",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fc84249008290677885e0f37facc45611503c5d283fd54d3e006938f511d8ef0"
+  },
+  "id": "3z3RmrMxfKXZx97J",
+  "tags": []
+}

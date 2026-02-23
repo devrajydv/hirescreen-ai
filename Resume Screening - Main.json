@@ -1,0 +1,775 @@
+{
+  "name": "Resume Screening - Main",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "screen-resumes",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        -192
+      ],
+      "id": "917c85b8-0bf9-4028-b4bf-19310f6f4a40",
+      "name": "Webhook",
+      "webhookId": "bb28c5c1-30e7-45c0-99dd-bf582c97b235"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert HR screening assistant. Evaluate this candidate against the job requirements.\n\nJOB TITLE: {{ $('Fetch JD').first().json.title }}\n\nSCREENING SUMMARY:\n{{ $('Parse Processed').first().json.preprocessed }}\n\nReturn a JSON object with EXACTLY this structure:\n{\n  \"ats_score\": <integer 0-100>,\n  \"jd_match_percentage\": <integer 0-100>,\n  \"skills_matched\": [\"skill1\", \"skill2\"],\n  \"skills_missing\": [\"skill1\", \"skill2\"],\n  \"experience_years\": <number>,\n  \"education_summary\": \"<string>\",\n  \"strengths\": \"<one sentence>\",\n  \"weaknesses\": \"<one sentence>\",\n  \"overall_recommendation\": \"<one of: strong_yes | yes | maybe | no>\",\n  \"summary\": \"<two sentences maximum>\"\n}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an expert HR talent screening assistant. Always respond with valid JSON only. Never include markdown formatting, code fences, or extra text in your response."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2336,
+        16
+      ],
+      "id": "3f5d2253-b12b-4660-bf0a-5b9a25bd7d2e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "let rawOutput = $input.first().json.output;\nrawOutput = String(rawOutput).trim();\n\n// Remove lines that are just code fences\nconst lines = rawOutput.split('\\n').filter(line => {\n  return !line.trim().startsWith('`');\n});\n\nconst cleanedString = lines.join('\\n').trim();\n\nlet parsed;\ntry {\n  parsed = JSON.parse(cleanedString);\n} catch(e) {\n  // Last resort fallback\n  const start = cleanedString.indexOf('{');\n  const end = cleanedString.lastIndexOf('}');\n  try {\n    parsed = JSON.parse(cleanedString.substring(start, end + 1));\n  } catch(e2) {\n    parsed = {\n      ats_score: 0,\n      jd_match_percentage: 0,\n      skills_matched: [],\n      skills_missing: [],\n      experience_years: 0,\n      education_summary: \"Could not parse\",\n      strengths: \"Could not parse\",\n      weaknesses: \"Could not parse\",\n      overall_recommendation: \"maybe\",\n      summary: e2.message\n    };\n  }\n}\n\nreturn [{ json: parsed }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        16
+      ],
+      "id": "41ad81fb-9125-4a2d-a069-724775fcb858",
+      "name": "Parse AI Response"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\",\n  \"message\": \"Screening complete\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3376,
+        -208
+      ],
+      "id": "92ba53cb-c06a-4c9e-a921-7d5a2ee9d089",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "job_postings",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Webhook').first().json.body.job_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -192
+      ],
+      "id": "4fd11c8a-a5e8-4dae-af40-1c0a3bd4b8a1",
+      "name": "Fetch JD",
+      "credentials": {
+        "supabaseApi": {
+          "id": "43LfIbahXpYtmqUH",
+          "name": "Supabase HR"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Looping",
+      "typeVersion": 1,
+      "position": [
+        672,
+        208
+      ],
+      "id": "1488f652-0073-4d93-98bf-fceedad5039e"
+    },
+    {
+      "parameters": {
+        "url": "=https://tpdgzhkcnijthtwmwqrr.supabase.co/storage/v1/object/resumes/{{ $('Fetch Candidate').first().json.resume_file_path }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        912,
+        -16
+      ],
+      "id": "f61cebd4-a1b5-43aa-a038-a5267b47a406",
+      "name": "Download Resume",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "BM9ZhFThpnvj2uiY",
+          "name": "Supabase Service Role"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2f3e15e3-8937-4226-9e3b-f52f74752dd3",
+              "leftValue": "={{ $('Parse AI Response').first().json.ats_score }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2800,
+        16
+      ],
+      "id": "e681f7f7-7da8-4809-b734-663836977477",
+      "name": "Check AI Response"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "candidates",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.candidate_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        688,
+        16
+      ],
+      "id": "e9505ccb-9c6b-4fab-8be5-5f158424c49a",
+      "name": "Fetch Candidate",
+      "credentials": {
+        "supabaseApi": {
+          "id": "43LfIbahXpYtmqUH",
+          "name": "Supabase HR"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "tableId": "screening_reports",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "candidate_id",
+              "fieldValue": "={{ $('Fetch Candidate').first().json.id }}"
+            },
+            {
+              "fieldId": "job_id",
+              "fieldValue": "={{ $('Webhook').first().json.job_id }}"
+            },
+            {
+              "fieldId": "ats_score",
+              "fieldValue": "={{ $('Parse AI Response').first().json.ats_score }}"
+            },
+            {
+              "fieldId": "jd_match_percentage",
+              "fieldValue": "={{ $('Parse AI Response').first().json.jd_match_percentage }}"
+            },
+            {
+              "fieldId": "skills_matched",
+              "fieldValue": "={{ JSON.stringify($('Parse AI Response').first().json.skills_matched) }}"
+            },
+            {
+              "fieldId": "skills_missing",
+              "fieldValue": "={{ JSON.stringify($('Parse AI Response').first().json.skills_missing) }}"
+            },
+            {
+              "fieldId": "experience_years",
+              "fieldValue": "={{ $('Parse AI Response').first().json.experience_years }}"
+            },
+            {
+              "fieldId": "education_summary",
+              "fieldValue": "={{ $('Parse AI Response').first().json.education_summary }}"
+            },
+            {
+              "fieldId": "strengths",
+              "fieldValue": "={{ $('Parse AI Response').first().json.strengths }}"
+            },
+            {
+              "fieldId": "weaknesses",
+              "fieldValue": "={{ $('Parse AI Response').first().json.weaknesses }}"
+            },
+            {
+              "fieldId": "overall_recommendation",
+              "fieldValue": "={{ $('Parse AI Response').first().json.overall_recommendation }}"
+            },
+            {
+              "fieldId": "raw_ai_response",
+              "fieldValue": "={{ JSON.stringify($('Parse AI Response').first().json) }}"
+            },
+            {
+              "fieldId": "job_id",
+              "fieldValue": "={{ $('Fetch Candidate').first().json.job_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2960,
+        -64
+      ],
+      "id": "fca9474d-a804-440d-a395-3ab46c6ac1ba",
+      "name": "Save Report",
+      "credentials": {
+        "supabaseApi": {
+          "id": "43LfIbahXpYtmqUH",
+          "name": "Supabase HR"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "candidates",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Fetch Candidate').first().json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "upload_status",
+              "fieldValue": "done"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3168,
+        -80
+      ],
+      "id": "13db5738-9f6d-4332-8613-cd06ad09db7b",
+      "name": "Update Status Done",
+      "credentials": {
+        "supabaseApi": {
+          "id": "43LfIbahXpYtmqUH",
+          "name": "Supabase HR"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "candidates",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Fetch Candidate').first().json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "upload_status",
+              "fieldValue": "error"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3168,
+        112
+      ],
+      "id": "7c4c4c79-54ca-4630-a96d-a59988572dd1",
+      "name": "Mark Candidate Error",
+      "credentials": {
+        "supabaseApi": {
+          "id": "43LfIbahXpYtmqUH",
+          "name": "Supabase HR"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        496,
+        -160
+      ],
+      "id": "b750daa4-c30c-451e-970b-4a5d003388d3",
+      "name": "Split In Batches"
+    },
+    {
+      "parameters": {
+        "jsCode": "const candidateIds = $('Webhook').first().json.body.candidate_ids;\n\nreturn candidateIds.map(id => ({\n  json: { candidate_id: id }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -208
+      ],
+      "id": "a7846525-7349-4ee7-b4dd-739a7cd002a9",
+      "name": "Prepare Candidates"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        -32
+      ],
+      "id": "8aa0c270-bda0-43da-92af-9f621ae5ef1a",
+      "name": "Extract Text"
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 4000,
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2320,
+        256
+      ],
+      "id": "a670c249-bb74-4876-abe7-35667c29372f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Ih7em0sOFFr1Zd7m",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 2048,
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        192
+      ],
+      "id": "c9b938a1-40ca-4ed0-93f8-1ab36d4321b4",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Ih7em0sOFFr1Zd7m",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract only essential screening information from both documents. Be extremely concise.\n\nJOB DESCRIPTION:\n{{ $('Fetch JD').first().json.jd_text }}\n\nRESUME:\n{{ $('Extract Candidate Name').first().json.resume_text }}\n\nRespond in this exact format with no extra text:\n\nREQUIRED_SKILLS: TypeScript, Node.js, Python, React\nPREFERRED_SKILLS: AWS, Docker, Kubernetes\nMIN_EXPERIENCE: 5\nEDUCATION_REQ: Bachelor's Computer Science\nCANDIDATE_SKILLS: TypeScript, Node.js, React, PostgreSQL, Docker\nCANDIDATE_EXPERIENCE: 6\nCANDIDATE_EDUCATION: BS Computer Science UC Berkeley\nACHIEVEMENTS: Built analytics dashboard, Led team of 5, Reduced latency 40%",
+        "options": {
+          "systemMessage": "You are a document parser. Extract only what is asked. Be extremely concise. Never use JSON. Never add explanations."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1760,
+        -32
+      ],
+      "id": "cb61a893-01f3-4ec1-87f8-97bff7639e14",
+      "name": "Preprocess Documents"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutput = $input.first().json.output;\nreturn [{ json: { preprocessed: rawOutput } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        0
+      ],
+      "id": "89f26a94-9249-4722-93e0-31351e44ecc8",
+      "name": "Parse Processed"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resumeText = $('Extract Text').first().json.text;\nconst topSection = resumeText.substring(0, 500);\n\n// Extract name from first clean line\nconst lines = topSection.split('\\n')\n  .map(l => l.trim())\n  .filter(l => l.length > 1 && l.length < 60);\nconst candidateName = lines[0] || 'Unknown Candidate';\n\n// Extract email using regex\nconst emailMatch = resumeText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/);\nconst email = emailMatch ? emailMatch[0] : null;\n\n// Extract phone using regex\nconst phoneMatch = resumeText.match(/(\\+?\\d{1,3}[\\s.-]?)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}/);\nconst phone = phoneMatch ? phoneMatch[0].trim() : null;\n\nreturn [{\n  json: {\n    candidate_name: candidateName,\n    candidate_email: email,\n    candidate_phone: phone,\n    candidate_id: $('Fetch Candidate').first().json.id,\n    resume_text: resumeText\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        -32
+      ],
+      "id": "fda00250-9468-4eb4-b82e-8bc4e046422a",
+      "name": "Extract Candidate Name"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "candidates",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.candidate_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "full_name",
+              "fieldValue": "={{ $json.candidate_name }}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $json.candidate_email }}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{ $json.candidate_phone }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        -32
+      ],
+      "id": "792e7934-0193-4954-97f1-0dbedae4864d",
+      "name": "Update Candidate Name",
+      "credentials": {
+        "supabaseApi": {
+          "id": "43LfIbahXpYtmqUH",
+          "name": "Supabase HR"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch JD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Check AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch JD": {
+      "main": [
+        [
+          {
+            "node": "Prepare Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Looping": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Resume": {
+      "main": [
+        [
+          {
+            "node": "Extract Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check AI Response": {
+      "main": [
+        [
+          {
+            "node": "Save Report",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Candidate Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Candidate": {
+      "main": [
+        [
+          {
+            "node": "Download Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Report": {
+      "main": [
+        [
+          {
+            "node": "Update Status Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status Done": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Looping",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Candidates": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text": {
+      "main": [
+        [
+          {
+            "node": "Extract Candidate Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Preprocess Documents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preprocess Documents": {
+      "main": [
+        [
+          {
+            "node": "Parse Processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Processed": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Candidate Name": {
+      "main": [
+        [
+          {
+            "node": "Update Candidate Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Candidate Name": {
+      "main": [
+        [
+          {
+            "node": "Preprocess Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "2a9ddf95-c5bf-4616-bfcf-e99460c07cac",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fc84249008290677885e0f37facc45611503c5d283fd54d3e006938f511d8ef0"
+  },
+  "id": "LgVx2cPYS7hJJvr4",
+  "tags": []
+}
